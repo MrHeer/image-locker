@@ -1,6 +1,7 @@
 import { map } from "rxjs";
 import { imageData$, imageState$ } from "./state";
 import { grayscale } from "./grayscale";
+import { download } from "./download";
 
 const grayButton: HTMLButtonElement = document.querySelector("#gray")!;
 const downloadButton: HTMLButtonElement = document.querySelector("#download")!;
@@ -16,7 +17,8 @@ export const setupActions = () => {
     imageState$.next("gray");
   });
   downloadButton.addEventListener("click", () => {
-    console.log("download");
+    const image = imageData$.value!;
+    download(image);
   });
   copyButton.addEventListener("click", () => {
     console.log("copy");

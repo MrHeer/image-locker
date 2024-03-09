@@ -55,13 +55,17 @@ export const convertImageFileToImageData = async (file: File) => {
   return imageData;
 };
 
-export const convertToBase64 = (image: ImageData) => {
+export const convertToDataURL = (image: ImageData) => {
   const canvas = document.createElement("canvas");
   canvas.width = image.width;
   canvas.height = image.height;
   const context = canvas.getContext("2d")!;
   context.putImageData(image, 0, 0);
-  const dataURL = canvas.toDataURL("image/png");
+  return canvas.toDataURL("image/png");
+};
+
+export const convertToBase64 = (image: ImageData) => {
+  const dataURL = convertToDataURL(image);
   const base64Data = dataURL.split(",")[1];
   return btoa(base64Data);
 };
