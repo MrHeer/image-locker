@@ -2,6 +2,7 @@ import { map } from "rxjs";
 import { imageData$, imageState$ } from "./state";
 import { grayscale } from "./grayscale";
 import { download } from "./download";
+import { convertToBase64 } from "./canvas";
 
 const grayButton: HTMLButtonElement = document.querySelector("#gray")!;
 const downloadButton: HTMLButtonElement = document.querySelector("#download")!;
@@ -21,7 +22,10 @@ export const setupActions = () => {
     download(image);
   });
   copyButton.addEventListener("click", () => {
-    console.log("copy");
+    const image = imageData$.value!;
+    const base64 = convertToBase64(image);
+    navigator.clipboard.writeText(base64);
+    imageState$.next("copied");
   });
   compressButton.addEventListener("click", () => {
     console.log("compress");
