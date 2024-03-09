@@ -1,4 +1,4 @@
-import { imageData } from "./state";
+import { imageData$ } from "./state";
 
 const stage: HTMLElement = document.querySelector("#stage")!;
 const canvasElement: HTMLCanvasElement = document.querySelector("#canvas")!;
@@ -16,8 +16,8 @@ export const hiddenCanvas = () => {
 const resizeCanvas = () => {
   canvasElement.width = stage.clientWidth;
   canvasElement.height = stage.clientHeight;
-  if (imageData.value) {
-    drawIamge(imageData.value);
+  if (imageData$.value) {
+    drawIamge(imageData$.value);
   }
 };
 
@@ -55,10 +55,21 @@ export const convertImageFileToImageData = async (file: File) => {
   return imageData;
 };
 
+export const convertToBase64 = (image: ImageData) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const context = canvas.getContext("2d")!;
+  context.putImageData(image, 0, 0);
+  const dataURL = canvas.toDataURL("image/png");
+  const base64Data = dataURL.split(",")[1];
+  return btoa(base64Data);
+};
+
 export const setupCanvas = () => {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
-  imageData.subscribe((image) => {
+  imageData$.subscribe((image) => {
     if (image) {
       drawIamge(image);
     }

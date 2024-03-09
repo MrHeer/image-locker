@@ -1,14 +1,14 @@
 import { body } from "./body";
 import { convertImageFileToImageData } from "./canvas";
-import { imageData, imageState } from "./state";
+import { imageData$, imageState$ } from "./state";
 
 const uploadInput: HTMLInputElement = document.querySelector("#upload-input")!;
 const uploadBox: HTMLElement = document.querySelector("#upload-box")!;
 
 const handleFile = async (file: File) => {
   const image = await convertImageFileToImageData(file);
-  imageData.next(image);
-  imageState.next("origin");
+  imageData$.next(image);
+  imageState$.next("origin");
 };
 
 const changeHandler = (event: Event) => {

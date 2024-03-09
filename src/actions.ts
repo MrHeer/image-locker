@@ -1,5 +1,6 @@
 import { map } from "rxjs";
-import { imageState } from "./state";
+import { imageData$, imageState$ } from "./state";
+import { grayscale } from "./grayscale";
 
 const grayButton: HTMLButtonElement = document.querySelector("#gray")!;
 const downloadButton: HTMLButtonElement = document.querySelector("#download")!;
@@ -9,7 +10,10 @@ const restoreButton: HTMLButtonElement = document.querySelector("#restore")!;
 
 export const setupActions = () => {
   grayButton.addEventListener("click", () => {
-    console.log("gray");
+    const image = imageData$.value!;
+    const newImage = grayscale(image);
+    imageData$.next(newImage);
+    imageState$.next("gray");
   });
   downloadButton.addEventListener("click", () => {
     console.log("download");
@@ -24,17 +28,17 @@ export const setupActions = () => {
     console.log("restore");
   });
 
-  imageState.pipe(map((state) => state !== "origin")).subscribe((disabled) => {
+  imageState$.pipe(map((state) => state !== "origin")).subscribe((disabled) => {
     grayButton.disabled = disabled;
   });
-  imageState.pipe(map((state) => state !== "gray")).subscribe((disabled) => {
+  imageState$.pipe(map((state) => state !== "gray")).subscribe((disabled) => {
     downloadButton.disabled = disabled;
     copyButton.disabled = disabled;
   });
-  imageState.pipe(map((state) => state !== "copied")).subscribe((disabled) => {
+  imageState$.pipe(map((state) => state !== "copied")).subscribe((disabled) => {
     compressButton.disabled = disabled;
   });
-  imageState
+  imageState$
     .pipe(map((state) => state !== "compressed"))
     .subscribe((disabled) => {
       restoreButton.disabled = disabled;
