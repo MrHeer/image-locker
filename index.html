@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PNG Player</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1 id="title">PNG Player</h1>
+      <div id="stage">
+        <canvas class="hidden" id="canvas"></canvas>
+        <div id="upload-box">
+          <label id="upload-label" for="upload-input">Upload Image</label>
+          <input
+            id="upload-input"
+            type="file"
+            name="image"
+            accept="image/png"
+            hidden
+          />
+        </div>
+      </div>
+      <div id="actions">
+        <button id="gray" type="button">A(Gray)</button>
+        <button id="download" type="button">B(Download)</button>
+        <button id="copy" type="button">C(Copy Base64)</button>
+        <button id="compress" type="button">D(Compress)</button>
+        <button id="restore" type="button">E(Restore)</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
