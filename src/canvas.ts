@@ -66,8 +66,7 @@ export const convertToDataURL = (image: ImageData) => {
 
 export const convertToBase64 = (image: ImageData) => {
   const dataURL = convertToDataURL(image);
-  const base64Data = dataURL.split(",")[1];
-  return base64Data;
+  return dataURL.split(",")[1];
 };
 
 export const setupCanvas = () => {
