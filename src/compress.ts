@@ -22,18 +22,26 @@ const colorToBase64Char = (color: number) => {
   return BASE64_TABLE[color / 4];
 };
 
+/**
+ * When RGBA data including transparent colors is obtained from Canvas usinggetImageData
+ * getImageData, the RGB values may differ from the imagine values.
+ * https://dev.to/yoya/canvas-getimagedata-premultiplied-alpha-150b
+ */
 export const compress = async (base64: string, prefix = PREFIX) => {
   const length = base64.length + prefix.length * 2;
-  const remainder = length % 4;
-  const pixelLength = (length + remainder) / 4;
+  const remainder = length % 3;
+  const pixelLength = (length + remainder) / 3;
   const width = Math.ceil(Math.sqrt(pixelLength));
   const imageData = new ImageData(width, width);
   const paddedBase64 = `${prefix}${base64}${prefix}`.padEnd(
-    width * width * 4,
+    width * width * 3,
     "=",
   );
-  for (let i = 0; i < paddedBase64.length; i++) {
-    imageData.data[i] = base64CharToColor(paddedBase64[i]);
+  for (let i = 0; i < width * width; i++) {
+    imageData.data[i * 4] = base64CharToColor(paddedBase64[i * 3]);
+    imageData.data[i * 4 + 1] = base64CharToColor(paddedBase64[i * 3 + 1]);
+    imageData.data[i * 4 + 2] = base64CharToColor(paddedBase64[i * 3 + 2]);
+    imageData.data[i * 4 + 3] = 255;
   }
   return convertImageDataToBase64(imageData);
 };
@@ -41,11 +49,13 @@ export const compress = async (base64: string, prefix = PREFIX) => {
 export const decompress = async (base64: string, prefix = PREFIX) => {
   const imageData = await convertBase64ToImageData(base64);
   const originBase64Array: string[] = [];
-  imageData.data.forEach((color) => {
-    originBase64Array.push(colorToBase64Char(color));
-  });
+  imageData.data
+    .filter((_, index) => index % 4 !== 3)
+    .forEach((color) => {
+      originBase64Array.push(colorToBase64Char(color));
+    });
   const regex = new RegExp(`^${prefix}(?<base64>.+)${prefix}(=*)$`);
-  const originBase64 = originBase64Array.join().match(regex)?.groups?.base64;
+  const originBase64 = originBase64Array.join("").match(regex)?.groups?.base64;
   if (originBase64 === undefined) {
     throw new Error("invalid compressed base64");
   }
