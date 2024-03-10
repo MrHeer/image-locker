@@ -35,7 +35,7 @@ export const compress = async (base64: string, prefix = PREFIX) => {
   for (let i = 0; i < paddedBase64.length; i++) {
     imageData.data[i] = base64CharToColor(paddedBase64[i]);
   }
-  return await convertImageDataToBase64(imageData);
+  return convertImageDataToBase64(imageData);
 };
 
 export const decompress = async (base64: string, prefix = PREFIX) => {

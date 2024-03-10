@@ -3,12 +3,18 @@ export const IMAGE_TYPE = "image/png";
 export const convertImageToImageData = async (image: Blob) => {
   const bitmap = await createImageBitmap(image);
   const { width, height } = bitmap;
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+  const canvas = new OffscreenCanvas(width, height);
   const context = canvas.getContext("2d")!;
   context.drawImage(bitmap, 0, 0);
   return context.getImageData(0, 0, width, height);
+};
+
+export const blobToDataURL = async (blob: Blob) => {
+  return new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
 };
 
 export const convertImageDataToDataURL = async (
@@ -16,12 +22,11 @@ export const convertImageDataToDataURL = async (
   imageType = IMAGE_TYPE,
 ) => {
   const bitmap = await createImageBitmap(imageData);
-  const canvas = document.createElement("canvas");
-  canvas.width = bitmap.width;
-  canvas.height = bitmap.height;
+  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
   const context = canvas.getContext("2d")!;
   context.drawImage(bitmap, 0, 0);
-  return canvas.toDataURL(imageType, 1);
+  const blob = await canvas.convertToBlob({ type: imageType, quality: 1 });
+  return blobToDataURL(blob);
 };
 
 export const convertImageDataToBase64 = async (imageData: ImageData) => {
@@ -31,7 +36,7 @@ export const convertImageDataToBase64 = async (imageData: ImageData) => {
 
 export const convertDataURLToImageData = async (dataURL: string) => {
   const blob = await fetch(dataURL).then((res) => res.blob());
-  return await convertImageToImageData(blob);
+  return convertImageToImageData(blob);
 };
 
 export const convertBase64ToImageData = async (
@@ -39,5 +44,5 @@ export const convertBase64ToImageData = async (
   imageType = IMAGE_TYPE,
 ) => {
   const dataURL = `data:${imageType};base64,${base64}`;
-  return await convertDataURLToImageData(dataURL);
+  return convertDataURLToImageData(dataURL);
 };
