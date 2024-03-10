@@ -6,6 +6,6 @@ export const showCanvas$ = imageData$.pipe(
   map((imageData) => imageData !== null),
 );
 
-export const imageState$ = new BehaviorSubject<
-  null | "origin" | "gray" | "compressed"
->(null);
+export const actionDisabeled$ = imageData$.pipe(
+  map((imageData) => imageData === null),
+);

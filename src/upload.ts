@@ -1,7 +1,7 @@
 import { body } from "./body";
 import { convertImageFileToImageData } from "./image";
 import { IMAGE_TYPE } from "./image";
-import { imageData$, imageState$ } from "./state";
+import { imageData$ } from "./state";
 
 const uploadInput: HTMLInputElement = document.querySelector("#upload-input")!;
 const uploadBox: HTMLElement = document.querySelector("#upload-box")!;
@@ -9,7 +9,6 @@ const uploadBox: HTMLElement = document.querySelector("#upload-box")!;
 const handleFile = async (file: File) => {
   const imageData = await convertImageFileToImageData(file);
   imageData$.next(imageData);
-  imageState$.next("origin");
 };
 
 const changeHandler = (event: Event) => {
@@ -77,6 +76,23 @@ export const showUpload = () => {
 
 export const hiddenUpload = () => {
   uploadBox.classList.add("hidden");
+};
+
+export const uploadImage = (imageType = IMAGE_TYPE) => {
+  return new Promise<ImageData>((resolve) => {
+    const uploadInput = document.createElement("input");
+    uploadInput.type = "file";
+    uploadInput.accept = imageType;
+    uploadInput.addEventListener("change", (event) => {
+      event.preventDefault();
+      const { files } = event.target as HTMLInputElement;
+      if (files?.length === 1) {
+        const imageData = convertImageFileToImageData(files[0]);
+        resolve(imageData);
+      }
+    });
+    uploadInput.click();
+  });
 };
 
 export const setupUpload = () => {
