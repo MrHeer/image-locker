@@ -25,7 +25,6 @@ export const setupActions = () => {
     const imageData = imageData$.value!;
     const base64 = convertImageDataToBase64(imageData);
     navigator.clipboard.writeText(base64);
-    imageState$.next("copied");
   });
   compressButton.addEventListener("click", () => {
     console.log("compress");
@@ -37,11 +36,11 @@ export const setupActions = () => {
   imageState$.pipe(map((state) => state !== "origin")).subscribe((disabled) => {
     grayButton.disabled = disabled;
   });
-  imageState$.pipe(map((state) => state !== "gray")).subscribe((disabled) => {
+  imageState$.pipe(map((state) => state === null)).subscribe((disabled) => {
     downloadButton.disabled = disabled;
     copyButton.disabled = disabled;
   });
-  imageState$.pipe(map((state) => state !== "copied")).subscribe((disabled) => {
+  imageState$.pipe(map((state) => state !== "gray")).subscribe((disabled) => {
     compressButton.disabled = disabled;
   });
   imageState$

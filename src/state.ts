@@ -7,5 +7,5 @@ export const showCanvas$ = imageData$.pipe(
 );
 
 export const imageState$ = new BehaviorSubject<
-  null | "origin" | "gray" | "copied" | "compressed"
+  null | "origin" | "gray" | "compressed"
 >(null);
