@@ -1,13 +1,14 @@
 import { body } from "./body";
-import { convertImageFileToImageData } from "./canvas";
+import { convertImageFileToImageData } from "./image";
+import { IMAGE_TYPE } from "./image";
 import { imageData$, imageState$ } from "./state";
 
 const uploadInput: HTMLInputElement = document.querySelector("#upload-input")!;
 const uploadBox: HTMLElement = document.querySelector("#upload-box")!;
 
 const handleFile = async (file: File) => {
-  const image = await convertImageFileToImageData(file);
-  imageData$.next(image);
+  const imageData = await convertImageFileToImageData(file);
+  imageData$.next(imageData);
   imageState$.next("origin");
 };
 
@@ -46,7 +47,7 @@ const dropHandler = (event: DragEvent) => {
   }
 
   const file = files[0];
-  if (file.type !== "image/png") {
+  if (file.type !== IMAGE_TYPE) {
     console.log("only png allowed");
     return;
   }
@@ -79,6 +80,7 @@ export const hiddenUpload = () => {
 };
 
 export const setupUpload = () => {
+  uploadInput.accept = IMAGE_TYPE;
   uploadInput.addEventListener("change", changeHandler);
   uploadBox.addEventListener("drop", dropHandler);
   uploadBox.addEventListener("dragover", dragOverHandler);

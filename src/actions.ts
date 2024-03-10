@@ -1,8 +1,8 @@
 import { map } from "rxjs";
 import { imageData$, imageState$ } from "./state";
 import { grayscale } from "./grayscale";
-import { download } from "./download";
-import { convertToBase64 } from "./canvas";
+import { downloadImage } from "./download";
+import { convertImageDataToBase64 } from "./image";
 
 const grayButton: HTMLButtonElement = document.querySelector("#gray")!;
 const downloadButton: HTMLButtonElement = document.querySelector("#download")!;
@@ -12,18 +12,18 @@ const restoreButton: HTMLButtonElement = document.querySelector("#restore")!;
 
 export const setupActions = () => {
   grayButton.addEventListener("click", () => {
-    const image = imageData$.value!;
-    const newImage = grayscale(image);
-    imageData$.next(newImage);
+    const imageData = imageData$.value!;
+    const newImageData = grayscale(imageData);
+    imageData$.next(newImageData);
     imageState$.next("gray");
   });
   downloadButton.addEventListener("click", () => {
-    const image = imageData$.value!;
-    download(image);
+    const imageData = imageData$.value!;
+    downloadImage(imageData);
   });
   copyButton.addEventListener("click", () => {
-    const image = imageData$.value!;
-    const base64 = convertToBase64(image);
+    const imageData = imageData$.value!;
+    const base64 = convertImageDataToBase64(imageData);
     navigator.clipboard.writeText(base64);
     imageState$.next("copied");
   });
