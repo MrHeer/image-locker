@@ -19,4 +19,4 @@ pnpm dev
 - [x] Download image.
 - [x] Copy base64 to clipboard.
 - [x] Compress image.
-- [ ] Restore compressed image.
+- [x] Restore compressed image.
