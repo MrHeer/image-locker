@@ -22,17 +22,20 @@ const colorToBase64Char = (color: number) => {
   return BASE64_TABLE[color / 4];
 };
 
-export const compress = (base64: string, prefix = PREFIX) => {
+export const compress = async (base64: string, prefix = PREFIX) => {
   const length = base64.length + prefix.length * 2;
   const remainder = length % 4;
   const pixelLength = (length + remainder) / 4;
   const width = Math.ceil(Math.sqrt(pixelLength));
   const imageData = new ImageData(width, width);
-  const paddedBase64 = `${prefix}${base64}${prefix}`.padEnd(width * width, "=");
+  const paddedBase64 = `${prefix}${base64}${prefix}`.padEnd(
+    width * width * 4,
+    "=",
+  );
   for (let i = 0; i < paddedBase64.length; i++) {
     imageData.data[i] = base64CharToColor(paddedBase64[i]);
   }
-  return convertImageDataToBase64(imageData);
+  return await convertImageDataToBase64(imageData);
 };
 
 export const decompress = async (base64: string, prefix = PREFIX) => {

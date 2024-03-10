@@ -23,21 +23,21 @@ export const setupActions = () => {
   });
   copyButton.addEventListener("click", async () => {
     const imageData = imageData$.value!;
-    const base64 = convertImageDataToBase64(imageData);
+    const base64 = await convertImageDataToBase64(imageData);
     navigator.clipboard.writeText(base64);
     console.log("copied");
   });
   compressButton.addEventListener("click", async () => {
     const imageData = imageData$.value!;
-    const base64 = convertImageDataToBase64(imageData);
-    const compressedBase64 = compress(base64);
+    const base64 = await convertImageDataToBase64(imageData);
+    const compressedBase64 = await compress(base64);
     const compressedImageData =
       await convertBase64ToImageData(compressedBase64);
     imageData$.next(compressedImageData);
   });
   restoreButton.addEventListener("click", async () => {
     const imageData = await uploadImage();
-    const base64 = convertImageDataToBase64(imageData);
+    const base64 = await convertImageDataToBase64(imageData);
     try {
       const decompressedBase64 = await decompress(base64);
       const originalImageData =

@@ -1,5 +1,5 @@
 import { body } from "./body";
-import { convertImageFileToImageData } from "./image";
+import { convertImageToImageData } from "./image";
 import { IMAGE_TYPE } from "./image";
 import { imageData$ } from "./state";
 
@@ -7,7 +7,7 @@ const uploadInput: HTMLInputElement = document.querySelector("#upload-input")!;
 const uploadBox: HTMLElement = document.querySelector("#upload-box")!;
 
 const handleFile = async (file: File) => {
-  const imageData = await convertImageFileToImageData(file);
+  const imageData = await convertImageToImageData(file);
   imageData$.next(imageData);
 };
 
@@ -87,7 +87,7 @@ export const uploadImage = (imageType = IMAGE_TYPE) => {
       event.preventDefault();
       const { files } = event.target as HTMLInputElement;
       if (files?.length === 1) {
-        const imageData = convertImageFileToImageData(files[0]);
+        const imageData = convertImageToImageData(files[0]);
         resolve(imageData);
       }
     });
