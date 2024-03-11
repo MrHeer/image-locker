@@ -1,17 +1,18 @@
+import { effect } from "@preact/signals-core";
 import { setupBody } from "./body";
-import { imageData$ } from "./state";
-import { hiddenCanvas, setupCanvas, showCanvas } from "./canvas";
-import { setupUpload, showUpload, hiddenUpload } from "./upload";
+import { showCanvas } from "./signal";
+import { hiddenCanvasElement, setupCanvas, showCanvasElement } from "./canvas";
+import { setupUpload, showUploadElement, hiddenUploadElement } from "./upload";
 import { setupActions } from "./actions";
 
 const subscribeImageData = () => {
-  imageData$.subscribe((imageData) => {
-    if (imageData) {
-      hiddenUpload();
-      showCanvas();
+  effect(() => {
+    if (showCanvas.value) {
+      hiddenUploadElement();
+      showCanvasElement();
     } else {
-      hiddenCanvas();
-      showUpload();
+      hiddenCanvasElement();
+      showUploadElement();
     }
   });
 };

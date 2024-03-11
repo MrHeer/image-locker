@@ -1,4 +1,5 @@
-import { imageData$, actionDisabeled$ } from "./state";
+import { effect } from "@preact/signals-core";
+import { imageState, actionDisabeled } from "./signal";
 import { grayscale } from "./grayscale";
 import { downloadImage } from "./download";
 import { convertBase64ToImageData, convertImageDataToBase64 } from "./image";
@@ -13,27 +14,27 @@ const restoreButton: HTMLButtonElement = document.querySelector("#restore")!;
 
 export const setupActions = () => {
   grayButton.addEventListener("click", () => {
-    const imageData = imageData$.value!;
+    const imageData = imageState.value!;
     const newImageData = grayscale(imageData);
-    imageData$.next(newImageData);
+    imageState.value = newImageData;
   });
   downloadButton.addEventListener("click", () => {
-    const imageData = imageData$.value!;
+    const imageData = imageState.value!;
     downloadImage(imageData);
   });
   copyButton.addEventListener("click", async () => {
-    const imageData = imageData$.value!;
+    const imageData = imageState.value!;
     const base64 = await convertImageDataToBase64(imageData);
     navigator.clipboard.writeText(base64);
     console.log("copied");
   });
   compressButton.addEventListener("click", async () => {
-    const imageData = imageData$.value!;
+    const imageData = imageState.value!;
     const base64 = await convertImageDataToBase64(imageData);
     const compressedBase64 = await compress(base64);
     const compressedImageData =
       await convertBase64ToImageData(compressedBase64);
-    imageData$.next(compressedImageData);
+    imageState.value = compressedImageData;
   });
   restoreButton.addEventListener("click", async () => {
     const imageData = await uploadImage();
@@ -42,13 +43,14 @@ export const setupActions = () => {
       const decompressedBase64 = await decompress(base64);
       const originalImageData =
         await convertBase64ToImageData(decompressedBase64);
-      imageData$.next(originalImageData);
+      imageState.value = originalImageData;
     } catch (error) {
       console.error(error);
     }
   });
 
-  actionDisabeled$.subscribe((disabled) => {
+  effect(() => {
+    const disabled = actionDisabeled.value;
     grayButton.disabled = disabled;
     downloadButton.disabled = disabled;
     copyButton.disabled = disabled;

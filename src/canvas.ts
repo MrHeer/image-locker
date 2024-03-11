@@ -1,23 +1,24 @@
-import { imageData$ } from "./state";
+import { effect } from "@preact/signals-core";
+import { imageState } from "./signal";
 
 const stage: HTMLElement = document.querySelector("#stage")!;
 const canvasElement: HTMLCanvasElement = document.querySelector("#canvas")!;
 
 const context = canvasElement.getContext("2d")!;
 
-export const showCanvas = () => {
+export const showCanvasElement = () => {
   canvasElement.classList.remove("hidden");
 };
 
-export const hiddenCanvas = () => {
+export const hiddenCanvasElement = () => {
   canvasElement.classList.add("hidden");
 };
 
 const resizeCanvas = () => {
   canvasElement.width = stage.clientWidth;
   canvasElement.height = stage.clientHeight;
-  if (imageData$.value) {
-    drawIamge(imageData$.value);
+  if (imageState.value) {
+    drawIamge(imageState.value);
   }
 };
 
@@ -53,7 +54,8 @@ const drawIamge = async (imageData: ImageData) => {
 export const setupCanvas = () => {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
-  imageData$.subscribe((imageData) => {
+  effect(() => {
+    const imageData = imageState.value;
     if (imageData) {
       drawIamge(imageData);
     }

@@ -1,14 +1,14 @@
 import { body } from "./body";
 import { convertImageToImageData } from "./image";
 import { IMAGE_TYPE } from "./image";
-import { imageData$ } from "./state";
+import { imageState } from "./signal";
 
 const uploadInput: HTMLInputElement = document.querySelector("#upload-input")!;
 const uploadBox: HTMLElement = document.querySelector("#upload-box")!;
 
 const handleFile = async (file: File) => {
   const imageData = await convertImageToImageData(file);
-  imageData$.next(imageData);
+  imageState.value = imageData;
 };
 
 const changeHandler = (event: Event) => {
@@ -70,11 +70,11 @@ const dragLeaveHandler = (event: DragEvent) => {
   uploadBox.classList.remove("dragover");
 };
 
-export const showUpload = () => {
+export const showUploadElement = () => {
   uploadBox.classList.remove("hidden");
 };
 
-export const hiddenUpload = () => {
+export const hiddenUploadElement = () => {
   uploadBox.classList.add("hidden");
 };
 
