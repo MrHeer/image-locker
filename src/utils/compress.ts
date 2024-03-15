@@ -6,7 +6,7 @@ const BASE64_TABLE =
 
 const base64CharToColor = (base64: string) => {
   if (base64.length !== 1) {
-    throw new Error("only single character");
+    throw new Error("Need a character");
   }
   if (BASE64_TABLE.includes(base64)) {
     return BASE64_TABLE.indexOf(base64) * 4;
@@ -14,7 +14,7 @@ const base64CharToColor = (base64: string) => {
   if (base64 === "=") {
     return 255;
   }
-  throw new Error("invalid character");
+  throw new Error("Invalid base64 character");
 };
 
 const colorToBase64Char = (color: number) => {
@@ -57,7 +57,7 @@ export const decompress = async (base64: string, prefix = PREFIX) => {
   const regex = new RegExp(`^${prefix}(?<base64>.+)${prefix}(=*)$`);
   const originBase64 = originBase64Array.join("").match(regex)?.groups?.base64;
   if (originBase64 === undefined) {
-    throw new Error("invalid compressed base64");
+    throw new Error("Invalid compressed base64");
   }
   return originBase64;
 };

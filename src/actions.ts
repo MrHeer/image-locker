@@ -1,59 +1,45 @@
-import { effect } from "@preact/signals-core";
-import { imageState, actionDisabeled } from "./signal";
-import { grayscale } from "./grayscale";
-import { downloadImage } from "./download";
-import { convertBase64ToImageData, convertImageDataToBase64 } from "./image";
-import { compress, decompress } from "./compress";
-import { uploadImage } from "./upload";
+import { imageState } from "./signal";
+import { grayscale } from "./filters";
+import {
+  compress,
+  convertBase64ToImageData,
+  convertImageDataToBase64,
+  convertImageToImageData,
+  decompress,
+  downloadImage,
+  uploadImage,
+} from "./utils";
 
-const grayButton: HTMLButtonElement = document.querySelector("#gray")!;
-const downloadButton: HTMLButtonElement = document.querySelector("#download")!;
-const copyButton: HTMLButtonElement = document.querySelector("#copy")!;
-const compressButton: HTMLButtonElement = document.querySelector("#compress")!;
-const restoreButton: HTMLButtonElement = document.querySelector("#restore")!;
+export const grayscaleAction = async () => {
+  const imageData = imageState.value!;
+  const newImageData = grayscale(imageData);
+  imageState.value = newImageData;
+};
 
-export const setupActions = () => {
-  grayButton.addEventListener("click", () => {
-    const imageData = imageState.value!;
-    const newImageData = grayscale(imageData);
-    imageState.value = newImageData;
-  });
-  downloadButton.addEventListener("click", () => {
-    const imageData = imageState.value!;
-    downloadImage(imageData);
-  });
-  copyButton.addEventListener("click", async () => {
-    const imageData = imageState.value!;
-    const base64 = await convertImageDataToBase64(imageData);
-    navigator.clipboard.writeText(base64);
-    console.log("copied");
-  });
-  compressButton.addEventListener("click", async () => {
-    const imageData = imageState.value!;
-    const base64 = await convertImageDataToBase64(imageData);
-    const compressedBase64 = await compress(base64);
-    const compressedImageData =
-      await convertBase64ToImageData(compressedBase64);
-    imageState.value = compressedImageData;
-  });
-  restoreButton.addEventListener("click", async () => {
-    const imageData = await uploadImage();
-    const base64 = await convertImageDataToBase64(imageData);
-    try {
-      const decompressedBase64 = await decompress(base64);
-      const originalImageData =
-        await convertBase64ToImageData(decompressedBase64);
-      imageState.value = originalImageData;
-    } catch (error) {
-      console.error(error);
-    }
-  });
+export const downloadAction = async () => {
+  const imageData = imageState.value!;
+  await downloadImage(imageData);
+};
 
-  effect(() => {
-    const disabled = actionDisabeled.value;
-    grayButton.disabled = disabled;
-    downloadButton.disabled = disabled;
-    copyButton.disabled = disabled;
-    compressButton.disabled = disabled;
-  });
+export const copyAction = async () => {
+  const imageData = imageState.value!;
+  const base64 = await convertImageDataToBase64(imageData);
+  await navigator.clipboard.writeText(base64);
+};
+
+export const compressAction = async () => {
+  const imageData = imageState.value!;
+  const base64 = await convertImageDataToBase64(imageData);
+  const compressedBase64 = await compress(base64);
+  const compressedImageData = await convertBase64ToImageData(compressedBase64);
+  imageState.value = compressedImageData;
+};
+
+export const restoreAction = async () => {
+  const image = await uploadImage();
+  const imageData = await convertImageToImageData(image);
+  const base64 = await convertImageDataToBase64(imageData);
+  const decompressedBase64 = await decompress(base64);
+  const originalImageData = await convertBase64ToImageData(decompressedBase64);
+  imageState.value = originalImageData;
 };

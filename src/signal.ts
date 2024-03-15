@@ -1,4 +1,4 @@
-import { signal, computed } from "@preact/signals-core";
+import { signal, computed } from "@preact/signals-react";
 
 export const imageState = signal<ImageData | null>(null);
 
