@@ -10,6 +10,10 @@ import {
   uploadImage,
 } from "./utils";
 
+export const clearAction = async () => {
+  imageState.value = null;
+};
+
 export const grayscaleAction = async () => {
   const imageData = imageState.value!;
   const newImageData = grayscale(imageData);

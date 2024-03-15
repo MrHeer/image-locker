@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
+import { useAsync } from "react-use";
 import { useSignals } from "@preact/signals-react/runtime";
 import { imageState } from "../signal";
 
@@ -7,15 +8,10 @@ function Canvas({ width, height }: { width: number; height: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const imageData = imageState.value;
 
-  const clearCanvas = useCallback(
-    (context: CanvasRenderingContext2D) => {
-      context.clearRect(0, 0, width, height);
-    },
-    [width, height],
-  );
-
   const drawIamge = useCallback(
     async (context: CanvasRenderingContext2D, imageData: ImageData) => {
+      const bitmap = await createImageBitmap(imageData);
+      context.clearRect(0, 0, width, height);
       context.save();
       const canvasAspect = width / height;
       const imageAspect = imageData.width / imageData.height;
@@ -28,18 +24,16 @@ function Canvas({ width, height }: { width: number; height: number }) {
         context.translate(0, height / 2 - (imageData.height * scale) / 2);
         context.scale(scale, scale);
       }
-      const bitmap = await createImageBitmap(imageData);
-      clearCanvas(context);
       context.drawImage(bitmap, 0, 0);
       context.restore();
     },
-    [clearCanvas, height, width],
+    [height, width],
   );
 
-  useEffect(() => {
+  useAsync(async () => {
     const context = ref.current?.getContext("2d");
     if (context && imageData) {
-      drawIamge(context, imageData);
+      await drawIamge(context, imageData);
     }
   }, [width, height, drawIamge, imageData]);
 

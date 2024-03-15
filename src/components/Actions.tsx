@@ -1,6 +1,7 @@
 import { Center, HStack, useToast } from "@chakra-ui/react";
 import {
   CopyIcon,
+  DeleteIcon,
   DownloadIcon,
   EditIcon,
   LockIcon,
@@ -9,6 +10,7 @@ import {
 import { useSignals } from "@preact/signals-react/runtime";
 import { actionDisabeled } from "../signal";
 import {
+  clearAction,
   compressAction,
   copyAction,
   downloadAction,
@@ -24,40 +26,42 @@ function Action() {
 
   return (
     <Center>
-      <HStack>
+      <HStack spacing={4}>
         <ActionButton
           isDisabled={disabled}
-          leftIcon={<EditIcon />}
+          icon={<DeleteIcon />}
+          action={clearAction}
+          text="Clear"
+        />
+        <ActionButton
+          isDisabled={disabled}
+          icon={<EditIcon />}
           action={grayscaleAction}
-        >
-          Grayscale
-        </ActionButton>
+          text="Grayscale"
+        />
         <ActionButton
           isDisabled={disabled}
-          leftIcon={<DownloadIcon />}
+          icon={<DownloadIcon />}
           action={downloadAction}
-        >
-          Download
-        </ActionButton>
+          text="Download"
+        />
         <ActionButton
           isDisabled={disabled}
-          leftIcon={<CopyIcon />}
+          icon={<CopyIcon />}
           action={async () => {
             await copyAction();
             toast({ status: "success", title: "Copied" });
           }}
-        >
-          Copy Base64
-        </ActionButton>
+          text="Copy Base64"
+        />
         <ActionButton
           isDisabled={disabled}
-          leftIcon={<LockIcon />}
+          icon={<LockIcon />}
           action={compressAction}
-        >
-          Compress
-        </ActionButton>
+          text="Compress"
+        />
         <ActionButton
-          leftIcon={<UnlockIcon />}
+          icon={<UnlockIcon />}
           action={async () => {
             try {
               await restoreAction();
@@ -65,9 +69,8 @@ function Action() {
               toast({ status: "error", title: (error as Error).message });
             }
           }}
-        >
-          Restore
-        </ActionButton>
+          text="Restore"
+        />
       </HStack>
     </Center>
   );
