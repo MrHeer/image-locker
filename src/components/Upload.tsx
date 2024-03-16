@@ -1,23 +1,27 @@
 import { useDropArea } from "react-use";
 import { Center, useToast } from "@chakra-ui/react";
-import { IMAGE_TYPE, convertImageToImageData, uploadImage } from "../utils";
+import { blobToImageData, upload } from "../lib";
 import { imageState } from "../signal";
+import { SUPPORTED_IMAGE_TYPE } from "../constant";
 
 const handleImage = async (file: File) => {
-  const imageData = await convertImageToImageData(file);
-  imageState.value = imageData;
+  const { name, type } = file;
+  const data = await blobToImageData(file);
+  imageState.value = { name, type, data };
 };
 
-const dropHandler = (files: File[]) => {
+const dropHandler = async (files: File[]) => {
   if (files.length !== 1) {
     throw new Error("Only 1 file allowed");
   }
 
   const file = files[0];
-  if (file.type !== IMAGE_TYPE) {
+  console.log(file.type);
+  if (file.type !== SUPPORTED_IMAGE_TYPE) {
     throw new Error("Only PNG file allowed");
   }
-  handleImage(file);
+
+  await handleImage(file);
 };
 
 function Upload() {
@@ -28,9 +32,9 @@ function Upload() {
   };
 
   const [bond, state] = useDropArea({
-    onFiles: (files) => {
+    onFiles: async (files) => {
       try {
-        dropHandler(files);
+        await dropHandler(files);
       } catch (error) {
         toast({ status: "warning", title: (error as Error).message });
       }
@@ -57,15 +61,15 @@ function Upload() {
       borderRadius="xl"
       onClick={async () => {
         try {
-          const image = await uploadImage();
-          handleImage(image);
+          const image = await upload(SUPPORTED_IMAGE_TYPE);
+          await handleImage(image);
         } catch (error) {
           toast({ status: "error", title: (error as Error).message });
         }
       }}
       {...bond}
     >
-      Click or drop to upload PNG
+      Click or drop to upload image
     </Center>
   );
 }

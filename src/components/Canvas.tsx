@@ -1,12 +1,12 @@
 import { useCallback, useRef } from "react";
 import { useAsync } from "react-use";
 import { useSignals } from "@preact/signals-react/runtime";
-import { imageState } from "../signal";
+import { imageData } from "../signal";
 
 function Canvas({ width, height }: { width: number; height: number }) {
   useSignals();
   const ref = useRef<HTMLCanvasElement>(null);
-  const imageData = imageState.value;
+  const data = imageData.value;
 
   const drawIamge = useCallback(
     async (context: CanvasRenderingContext2D, imageData: ImageData) => {
@@ -32,10 +32,10 @@ function Canvas({ width, height }: { width: number; height: number }) {
 
   useAsync(async () => {
     const context = ref.current?.getContext("2d");
-    if (context && imageData) {
-      await drawIamge(context, imageData);
+    if (context && data) {
+      await drawIamge(context, data);
     }
-  }, [width, height, drawIamge, imageData]);
+  }, [width, height, drawIamge, data]);
 
   return <canvas ref={ref} width={width} height={height} />;
 }

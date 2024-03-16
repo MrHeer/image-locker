@@ -11,11 +11,11 @@ import { useSignals } from "@preact/signals-react/runtime";
 import { actionDisabeled } from "../signal";
 import {
   clearAction,
-  compressAction,
   copyAction,
   downloadAction,
   grayscaleAction,
-  restoreAction,
+  lockAction,
+  unlockAction,
 } from "../actions";
 import ActionButton from "./ActionButton";
 
@@ -57,19 +57,19 @@ function Action() {
         <ActionButton
           isDisabled={disabled}
           icon={<LockIcon />}
-          action={compressAction}
-          text="Compress"
+          action={lockAction}
+          text="Lock"
         />
         <ActionButton
           icon={<UnlockIcon />}
           action={async () => {
             try {
-              await restoreAction();
+              await unlockAction();
             } catch (error) {
               toast({ status: "error", title: (error as Error).message });
             }
           }}
-          text="Restore"
+          text="Unlock"
         />
       </HStack>
     </Center>

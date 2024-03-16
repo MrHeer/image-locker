@@ -1,4 +1,4 @@
-# PNG Player
+# Image Locker
 
 ## Install
 
