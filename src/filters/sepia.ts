@@ -1,6 +1,6 @@
 import { Filter } from "./types";
 
-export const grayscale: Filter = (imageData: ImageData) => {
+export const sepia: Filter = (imageData: ImageData) => {
   const newImageData = new ImageData(imageData.width, imageData.height);
   const { data } = newImageData;
   for (let i = 0; i < data.length; i += 4) {
@@ -9,10 +9,18 @@ export const grayscale: Filter = (imageData: ImageData) => {
       blue = imageData.data[i + 2],
       alpha = imageData.data[i + 3];
 
-    const gray = 0.299 * red + 0.587 * green + 0.114 * blue;
-    data[i] = gray;
-    data[i + 1] = gray;
-    data[i + 2] = gray;
+    data[i] = Math.min(
+      Math.round(0.393 * red + 0.769 * green + 0.189 * blue),
+      255,
+    );
+    data[i + 1] = Math.min(
+      Math.round(0.349 * red + 0.686 * green + 0.168 * blue),
+      255,
+    );
+    data[i + 2] = Math.min(
+      Math.round(0.272 * red + 0.534 * green + 0.131 * blue),
+      255,
+    );
     data[i + 3] = alpha;
   }
   return newImageData;

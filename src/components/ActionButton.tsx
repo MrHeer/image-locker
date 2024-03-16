@@ -1,16 +1,12 @@
-import { Button, IconButton, useBreakpointValue } from "@chakra-ui/react";
-import { ReactElement, useState } from "react";
+import { useState } from "react";
+import { Button, ButtonProps } from "./Button";
 
 type Props = {
-  icon: ReactElement;
-  isDisabled?: boolean;
-  text: string;
   action: () => Promise<void>;
-};
+} & ButtonProps;
 
-function ActionButton({ icon, isDisabled, text, action }: Props) {
+function ActionButton({ action, ...rest }: Props) {
   const [loading, setLoading] = useState(false);
-  const isMobile = useBreakpointValue({ lg: false, base: true });
 
   const handleClick = async () => {
     setLoading(true);
@@ -18,23 +14,7 @@ function ActionButton({ icon, isDisabled, text, action }: Props) {
     setLoading(false);
   };
 
-  return isMobile ? (
-    <IconButton
-      aria-label={text}
-      isLoading={loading}
-      icon={icon}
-      isDisabled={isDisabled}
-      onClick={handleClick}
-    />
-  ) : (
-    <Button
-      isLoading={loading}
-      leftIcon={icon}
-      isDisabled={isDisabled}
-      onClick={handleClick}
-      children={text}
-    />
-  );
+  return <Button onClick={handleClick} isLoading={loading} {...rest} />;
 }
 
 export default ActionButton;

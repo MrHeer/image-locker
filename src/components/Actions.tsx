@@ -13,11 +13,13 @@ import {
   clearAction,
   copyAction,
   downloadAction,
-  grayscaleAction,
+  filterAction,
   lockAction,
   unlockAction,
 } from "../actions";
 import ActionButton from "./ActionButton";
+import FilterButton from "./FilterButton";
+import { grayscale, invert, sepia } from "../filters";
 
 function Action() {
   useSignals();
@@ -31,20 +33,25 @@ function Action() {
           isDisabled={disabled}
           icon={<DeleteIcon />}
           action={clearAction}
-          text="Clear"
-        />
-        <ActionButton
+        >
+          Clear
+        </ActionButton>
+        <FilterButton
           isDisabled={disabled}
           icon={<EditIcon />}
-          action={grayscaleAction}
-          text="Grayscale"
-        />
+          onGrayscale={() => filterAction(grayscale)}
+          onInvert={() => filterAction(invert)}
+          onSepia={() => filterAction(sepia)}
+        >
+          Filter
+        </FilterButton>
         <ActionButton
           isDisabled={disabled}
           icon={<DownloadIcon />}
           action={downloadAction}
-          text="Download"
-        />
+        >
+          Download
+        </ActionButton>
         <ActionButton
           isDisabled={disabled}
           icon={<CopyIcon />}
@@ -52,14 +59,16 @@ function Action() {
             await copyAction();
             toast({ status: "success", title: "Copied" });
           }}
-          text="Copy Base64"
-        />
+        >
+          Copy Base64
+        </ActionButton>
         <ActionButton
           isDisabled={disabled}
           icon={<LockIcon />}
           action={lockAction}
-          text="Lock"
-        />
+        >
+          Lock
+        </ActionButton>
         <ActionButton
           icon={<UnlockIcon />}
           action={async () => {
@@ -69,8 +78,9 @@ function Action() {
               toast({ status: "error", title: (error as Error).message });
             }
           }}
-          text="Unlock"
-        />
+        >
+          Unlock
+        </ActionButton>
       </HStack>
     </Center>
   );

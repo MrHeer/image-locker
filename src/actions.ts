@@ -1,5 +1,5 @@
 import { imageData, imageState, updateImageData } from "./signal";
-import { grayscale } from "./filters";
+import { Filter } from "./filters";
 import {
   base64ToImageData,
   blobToImageData,
@@ -16,9 +16,9 @@ export const clearAction = async () => {
   imageState.value = null;
 };
 
-export const grayscaleAction = async () => {
+export const filterAction = (filter: Filter) => {
   const data = imageData.value!;
-  const newData = grayscale(data);
+  const newData = filter(data);
   updateImageData(newData);
 };
 
