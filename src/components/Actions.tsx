@@ -56,8 +56,12 @@ function Action() {
           isDisabled={disabled}
           icon={<CopyIcon />}
           action={async () => {
-            await copyAction();
-            toast({ status: "success", title: "Copied" });
+            try {
+              await copyAction();
+              toast({ status: "success", title: "Copied" });
+            } catch (error) {
+              toast({ status: "error", title: (error as Error).message });
+            }
           }}
         >
           Copy Base64
