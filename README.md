@@ -21,5 +21,5 @@ pnpm dev
   - Sepia
 - Download image.
 - Copy base64 to clipboard.
-- Lock image.
-- Unlock image.
+- Lock image with password.
+- Unlock image with password.
