@@ -76,6 +76,8 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
       <ButtonGroup display="flex" justifyContent="flex-end">
         <ChakraButton
           colorScheme="blue"
+          size="sm"
+          isDisabled={isError}
           onClick={() => {
             const password = checkPassword();
             if (password) {

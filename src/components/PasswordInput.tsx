@@ -26,6 +26,7 @@ const PasswordInput = forwardRef(
         <InputRightElement>
           <IconButton
             aria-label={show ? "hidden password" : "show password"}
+            size="xs"
             variant="ghost"
             onClick={handleClick}
             icon={show ? <ViewOffIcon /> : <ViewIcon />}
