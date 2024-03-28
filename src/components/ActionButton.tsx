@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, ButtonProps } from "./Button";
 
 type Props = {
-  action: () => Promise<void>;
+  action?: () => Promise<void>;
 } & ButtonProps;
 
 function ActionButton({ action, ...rest }: Props) {
@@ -10,7 +10,7 @@ function ActionButton({ action, ...rest }: Props) {
 
   const handleClick = async () => {
     setLoading(true);
-    await action();
+    await action?.();
     setLoading(false);
   };
 

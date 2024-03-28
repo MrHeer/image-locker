@@ -12,13 +12,13 @@ const handleImage = async (file: File) => {
 
 const dropHandler = async (files: File[]) => {
   if (files.length !== 1) {
-    throw new Error("Only 1 file allowed");
+    throw new Error("Only 1 file allowed.");
   }
 
   const file = files[0];
   console.log(file.type);
   if (file.type !== SUPPORTED_IMAGE_TYPE) {
-    throw new Error("Only PNG file allowed");
+    throw new Error("Only PNG file allowed.");
   }
 
   await handleImage(file);

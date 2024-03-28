@@ -9,11 +9,11 @@ export const upload = (acceptType: string) => {
       if (files?.length === 1) {
         resolve(files[0]);
       } else {
-        reject(new Error("No file selected"));
+        reject(new Error("No file selected."));
       }
     });
     uploadInput.addEventListener("cancel", () => {
-      reject(new Error("No file selected"));
+      reject(new Error("No file selected."));
     });
     uploadInput.click();
   });
