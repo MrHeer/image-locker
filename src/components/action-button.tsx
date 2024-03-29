@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Button, ButtonProps } from "./Button";
+import { Button, ButtonProps } from "./button";
 
 type Props = {
   action?: () => Promise<void>;

@@ -16,8 +16,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useDebounceCallback } from "usehooks-ts";
-import PasswordInput from "./PasswordInput";
-import { Button, ButtonProps } from "./Button";
+import PasswordInput from "./password-input";
+import { Button, ButtonProps } from "./button";
 
 function passwordChecker(password: string) {
   if (password.length === 0) {

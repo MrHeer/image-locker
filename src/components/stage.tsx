@@ -1,8 +1,8 @@
 import { Center } from "@chakra-ui/react";
 import { useMeasure } from "react-use";
 import { useSignals } from "@preact/signals-react/runtime";
-import Upload from "./Upload";
-import Canvas from "./Canvas";
+import Upload from "./upload";
+import Canvas from "./canvas";
 import { showCanvas } from "../signal";
 
 function Stage() {
