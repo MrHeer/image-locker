@@ -17,10 +17,10 @@ import {
   lockAction,
   unlockAction,
 } from "../actions";
-import ActionButton from "./ActionButton";
-import FilterButton from "./FilterButton";
+import ActionButton from "./action-button";
+import FilterButton from "./filter-button";
 import { grayscale, invert, sepia } from "../filters";
-import PasswordButton from "./PasswordButton";
+import PasswordButton from "./password-button";
 
 function Action() {
   useSignals();

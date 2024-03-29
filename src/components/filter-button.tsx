@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
-import { Button, ButtonProps } from "./Button";
+import { Button, ButtonProps } from "./button";
 
 type Props = ButtonProps & {
   onGrayscale: () => void;
