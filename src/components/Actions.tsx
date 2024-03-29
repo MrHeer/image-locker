@@ -20,6 +20,7 @@ import {
 import ActionButton from "./ActionButton";
 import FilterButton from "./FilterButton";
 import { grayscale, invert, sepia } from "../filters";
+import PasswordButton from "./PasswordButton";
 
 function Action() {
   useSignals();
@@ -66,25 +67,34 @@ function Action() {
         >
           Copy Base64
         </ActionButton>
-        <ActionButton
+        <PasswordButton
+          id="lock"
           isDisabled={disabled}
           icon={<LockIcon />}
-          action={lockAction}
+          action={async (password) => {
+            try {
+              await lockAction(password);
+            } catch (error) {
+              toast({ status: "error", title: (error as Error).message });
+            }
+          }}
         >
           Lock
-        </ActionButton>
-        <ActionButton
+        </PasswordButton>
+        <PasswordButton
+          id="unlock"
+          isDisabled={disabled}
           icon={<UnlockIcon />}
-          action={async () => {
+          action={async (password) => {
             try {
-              await unlockAction();
+              await unlockAction(password);
             } catch (error) {
               toast({ status: "error", title: (error as Error).message });
             }
           }}
         >
           Unlock
-        </ActionButton>
+        </PasswordButton>
       </HStack>
     </Center>
   );

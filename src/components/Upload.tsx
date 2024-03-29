@@ -1,3 +1,4 @@
+import { useCallback, useLayoutEffect } from "react";
 import { useDropArea } from "react-use";
 import { Center, useToast } from "@chakra-ui/react";
 import { blobToImageData, upload } from "../lib";
@@ -12,13 +13,13 @@ const handleImage = async (file: File) => {
 
 const dropHandler = async (files: File[]) => {
   if (files.length !== 1) {
-    throw new Error("Only 1 file allowed");
+    throw new Error("Only 1 file allowed.");
   }
 
   const file = files[0];
   console.log(file.type);
   if (file.type !== SUPPORTED_IMAGE_TYPE) {
-    throw new Error("Only PNG file allowed");
+    throw new Error("Only PNG file allowed.");
   }
 
   await handleImage(file);
@@ -31,7 +32,7 @@ function Upload() {
     toast({ status: "warning", title: "Please drop a PNG file." });
   };
 
-  const [bond, state] = useDropArea({
+  const [bond, { over }] = useDropArea({
     onFiles: async (files) => {
       try {
         await dropHandler(files);
@@ -43,11 +44,22 @@ function Upload() {
     onText: toastMessage,
   });
 
-  if (state.over) {
-    document.body.classList.add("droppable");
-  } else {
-    document.body.classList.remove("droppable");
-  }
+  useLayoutEffect(() => {
+    if (over) {
+      document.body.classList.add("droppable");
+    } else {
+      document.body.classList.remove("droppable");
+    }
+  }, [over]);
+
+  const handleUpload = useCallback(async () => {
+    try {
+      const image = await upload(SUPPORTED_IMAGE_TYPE);
+      await handleImage(image);
+    } catch (error) {
+      toast({ status: "error", title: (error as Error).message });
+    }
+  }, [toast]);
 
   return (
     <Center
@@ -55,18 +67,11 @@ function Upload() {
       h={24}
       transition="all 250ms"
       border="solid 1px"
-      color={state.over ? "blue.400" : "gray.500"}
-      borderColor={state.over ? "blue.400" : "gray.500"}
+      color={over ? "blue.400" : "gray.500"}
+      borderColor={over ? "blue.400" : "gray.500"}
       _hover={{ borderColor: "blue.400", color: "blue.400", cursor: "pointer" }}
       borderRadius="xl"
-      onClick={async () => {
-        try {
-          const image = await upload(SUPPORTED_IMAGE_TYPE);
-          await handleImage(image);
-        } catch (error) {
-          toast({ status: "error", title: (error as Error).message });
-        }
-      }}
+      onClick={handleUpload}
       {...bond}
     >
       Click or drop to upload image
