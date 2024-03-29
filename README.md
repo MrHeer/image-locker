@@ -20,6 +20,7 @@ pnpm dev
   - Invert
   - Sepia
 - Download image.
-- Copy base64 to clipboard.
+- Copy Base64 to clipboard.
 - Lock image with password.
 - Unlock image with password.
+- Crypto with AES-256-GCM

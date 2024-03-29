@@ -1,3 +1,5 @@
+import { bufferToBase64, base64ToBuffer } from "./base64";
+import { decrypt, encrypt } from "./crypto";
 import { base64ToImageData, imageDataToBase64 } from "./image";
 
 const IDENTITY = "IMAGELOCKER";
@@ -27,17 +29,16 @@ const colorToBase64Char = (color: number) => {
  * getImageData, the RGB values may differ from the imagine values.
  * https://dev.to/yoya/canvas-getimagedata-premultiplied-alpha-150b
  */
-const encode = async (base64: string, type: string, password: string) => {
-  const length = base64.length + IDENTITY.length * 2 + password.length * 2;
+const encode = async (base64: string, type: string) => {
+  const length = base64.length + IDENTITY.length * 2;
   const remainder = length % 3;
   const pixelLength = (length + remainder) / 3;
   const width = Math.ceil(Math.sqrt(pixelLength));
   const imageData = new ImageData(width, width);
-  const paddedBase64 =
-    `${IDENTITY}${password}${base64}${password}${IDENTITY}`.padEnd(
-      width * width * 3,
-      "=",
-    );
+  const paddedBase64 = `${IDENTITY}${base64}${IDENTITY}`.padEnd(
+    width * width * 3,
+    "=",
+  );
   for (let i = 0; i < width * width; i++) {
     imageData.data[i * 4] = base64CharToColor(paddedBase64[i * 3]);
     imageData.data[i * 4 + 1] = base64CharToColor(paddedBase64[i * 3 + 1]);
@@ -60,7 +61,10 @@ const decode = async (base64: string, type: string) => {
 };
 
 export const lock = async (base64: string, type: string, password: string) => {
-  return encode(base64, type, password);
+  const buffer = base64ToBuffer(base64);
+  const encryptedBuffer = await encrypt(buffer, password);
+  const encryptedBase64 = bufferToBase64(encryptedBuffer);
+  return encode(encryptedBase64, type);
 };
 
 export const isLocked = (decodedBase64: string) => {
@@ -78,12 +82,14 @@ export const unlock = async (
     throw new Error("This image is not locked.");
   }
 
-  const regex = new RegExp(
-    `^${IDENTITY}${password}(?<base64>.+)${password}${IDENTITY}=*$`,
-  );
-  const originBase64 = decodedBase64.match(regex)?.groups?.base64;
-  if (originBase64 === undefined) {
-    throw new Error("Password is incorrect.");
+  const regex = new RegExp(`^${IDENTITY}(?<base64>.+)${IDENTITY}=*$`);
+  const encryptedBase64 = decodedBase64.match(regex)!.groups!.base64;
+  const encryptedBuffer = base64ToBuffer(encryptedBase64);
+  try {
+    const decryptedBuffer = await decrypt(encryptedBuffer, password);
+    const originBase64 = bufferToBase64(decryptedBuffer);
+    return originBase64;
+  } catch (error) {
+    throw new Error("The password is incorrect.");
   }
-  return originBase64;
 };
