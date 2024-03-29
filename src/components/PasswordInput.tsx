@@ -6,14 +6,14 @@ import {
   InputProps,
   InputRightElement,
 } from "@chakra-ui/react";
-import { useState, ForwardedRef, forwardRef } from "react";
+import { useState, ForwardedRef, forwardRef, useCallback } from "react";
 
 type Props = Omit<InputProps, "type">;
 
 const PasswordInput = forwardRef(
   (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     const [show, setShow] = useState(false);
-    const handleClick = () => setShow((show) => !show);
+    const handleClick = useCallback(() => setShow((show) => !show), []);
 
     return (
       <InputGroup>

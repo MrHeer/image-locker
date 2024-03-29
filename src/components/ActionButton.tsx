@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, ButtonProps } from "./Button";
 
 type Props = {
@@ -8,11 +8,11 @@ type Props = {
 function ActionButton({ action, ...rest }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     setLoading(true);
     await action?.();
     setLoading(false);
-  };
+  }, [action]);
 
   return <Button onClick={handleClick} isLoading={loading} {...rest} />;
 }

@@ -15,6 +15,7 @@ import {
   Stack,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useDebounceCallback } from "usehooks-ts";
 import PasswordInput from "./PasswordInput";
 import { Button, ButtonProps } from "./Button";
 
@@ -56,6 +57,10 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
     return password;
   }, [firstFieldRef]);
 
+  const debouncedCheckPassword = useDebounceCallback(checkPassword, 500, {
+    leading: true,
+  });
+
   return (
     <Stack spacing={4}>
       <FormControl isInvalid={isError}>
@@ -63,7 +68,7 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
         <PasswordInput
           id={inputId}
           ref={firstFieldRef}
-          onChange={checkPassword}
+          onChange={debouncedCheckPassword}
         />
         {!isError ? (
           <FormHelperText>
@@ -79,7 +84,7 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
           size="sm"
           isDisabled={isError}
           onClick={() => {
-            const password = checkPassword();
+            const password = debouncedCheckPassword();
             if (password) {
               onOk(password);
             }
@@ -102,9 +107,19 @@ const PasswordButton = ({
   action,
   ...buttonProps
 }: PasswordButtonProps) => {
+  const firstFieldRef = useRef(null!);
   const [loading, setLoading] = useState(false);
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const firstFieldRef = useRef(null!);
+
+  const handleSubmit = useCallback(
+    async (password: string) => {
+      onClose();
+      setLoading(true);
+      await action(password);
+      setLoading(false);
+    },
+    [action, onClose],
+  );
 
   return (
     <Popover
@@ -125,12 +140,7 @@ const PasswordButton = ({
           <PasswordForm
             id={id}
             firstFieldRef={firstFieldRef}
-            onOk={async (password) => {
-              onClose();
-              setLoading(true);
-              await action(password);
-              setLoading(false);
-            }}
+            onOk={handleSubmit}
           />
         </FocusLock>
       </PopoverContent>

@@ -15,7 +15,6 @@ function Stage() {
         if (element) ref(element);
       }}
       h="full"
-      onResize={(e) => e.target}
     >
       {showCanvas.value ? (
         <Canvas width={Math.round(width)} height={Math.round(height)} />
