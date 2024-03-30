@@ -17,7 +17,6 @@ const dropHandler = async (files: File[]) => {
   }
 
   const file = files[0];
-  console.log(file.type);
   if (file.type !== SUPPORTED_IMAGE_TYPE) {
     throw new Error("Only PNG file allowed.");
   }
