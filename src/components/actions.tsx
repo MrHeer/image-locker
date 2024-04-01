@@ -21,6 +21,7 @@ import ActionButton from "./action-button";
 import FilterButton from "./filter-button";
 import { grayscale, invert, sepia } from "../filters";
 import PasswordButton from "./password-button";
+import { none } from "../filters/none";
 
 function Action() {
   useSignals();
@@ -43,6 +44,7 @@ function Action() {
           onGrayscale={() => filterAction(grayscale)}
           onInvert={() => filterAction(invert)}
           onSepia={() => filterAction(sepia)}
+          onNone={() => filterAction(none)}
         >
           Filter
         </FilterButton>

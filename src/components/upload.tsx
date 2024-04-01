@@ -1,15 +1,9 @@
 import { useCallback, useLayoutEffect } from "react";
 import { useDropArea } from "react-use";
 import { Center, useToast } from "@chakra-ui/react";
-import { blobToImageData, upload } from "../lib";
-import { imageState } from "../signal";
+import { uploadAction } from "../actions";
+import { upload } from "../lib";
 import { SUPPORTED_IMAGE_TYPE } from "../constant";
-
-const handleImage = async (file: File) => {
-  const { name, type } = file;
-  const data = await blobToImageData(file);
-  imageState.value = { name, type, data };
-};
 
 const dropHandler = async (files: File[]) => {
   if (files.length !== 1) {
@@ -21,7 +15,7 @@ const dropHandler = async (files: File[]) => {
     throw new Error("Only PNG file allowed.");
   }
 
-  await handleImage(file);
+  await uploadAction(file);
 };
 
 function Upload() {
@@ -54,7 +48,7 @@ function Upload() {
   const handleUpload = useCallback(async () => {
     try {
       const image = await upload(SUPPORTED_IMAGE_TYPE);
-      await handleImage(image);
+      await uploadAction(image);
     } catch (error) {
       toast({ status: "error", title: (error as Error).message });
     }
