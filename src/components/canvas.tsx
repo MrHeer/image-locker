@@ -1,27 +1,33 @@
-import { useCallback, useRef } from "react";
-import { useAsync } from "react-use";
-import { useSignals } from "@preact/signals-react/runtime";
-import { imageData } from "../signal";
+import { useCallback, useRef } from 'react';
+import { useAsync } from 'react-use';
+import { useSignals } from '@preact/signals-react/runtime';
+import { imageDataSignal } from '../signal';
 
-function Canvas({ width, height }: { width: number; height: number }) {
+export function Canvas({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}): JSX.Element {
   useSignals();
   const ref = useRef<HTMLCanvasElement>(null);
-  const data = imageData.value;
+  const imageData = imageDataSignal.value;
 
   const drawIamge = useCallback(
-    async (context: CanvasRenderingContext2D, imageData: ImageData) => {
-      const bitmap = await createImageBitmap(imageData);
+    async (context: CanvasRenderingContext2D, image: ImageData) => {
+      const bitmap = await createImageBitmap(image);
       context.clearRect(0, 0, width, height);
       context.save();
       const canvasAspect = width / height;
-      const imageAspect = imageData.width / imageData.height;
+      const imageAspect = image.width / image.height;
       if (canvasAspect > imageAspect) {
-        const scale = height / imageData.height;
-        context.translate(width / 2 - (imageData.width * scale) / 2, 0);
+        const scale = height / image.height;
+        context.translate(width / 2 - (image.width * scale) / 2, 0);
         context.scale(scale, scale);
       } else {
-        const scale = width / imageData.width;
-        context.translate(0, height / 2 - (imageData.height * scale) / 2);
+        const scale = width / image.width;
+        context.translate(0, height / 2 - (image.height * scale) / 2);
         context.scale(scale, scale);
       }
       context.drawImage(bitmap, 0, 0);
@@ -31,13 +37,11 @@ function Canvas({ width, height }: { width: number; height: number }) {
   );
 
   useAsync(async () => {
-    const context = ref.current?.getContext("2d");
-    if (context && data) {
-      await drawIamge(context, data);
+    const context = ref.current?.getContext('2d');
+    if (context) {
+      await drawIamge(context, imageData);
     }
-  }, [width, height, drawIamge, data]);
+  }, [width, height, drawIamge, imageData]);
 
   return <canvas ref={ref} width={width} height={height} />;
 }
-
-export default Canvas;

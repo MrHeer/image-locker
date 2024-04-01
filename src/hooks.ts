@@ -1,5 +1,5 @@
-import { useBreakpointValue } from "@chakra-ui/react";
+import { useBreakpointValue } from '@chakra-ui/react';
 
-export const useIsMobile = () => {
+export function useIsMobile(): boolean {
   return useBreakpointValue({ lg: false, base: true }) ?? false;
-};
+}

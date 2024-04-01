@@ -1,10 +1,10 @@
-import { Box, Container, Flex } from "@chakra-ui/react";
-import { Actions, Stage, Title } from "./components";
-import { useInitBody } from "./body";
+import { Box, Container, Flex } from '@chakra-ui/react';
+import { Actions, Stage, Title } from './components';
+import { useInitBody } from './body';
 
-import "./index.css";
+import './index.css';
 
-function App() {
+export function App(): JSX.Element {
   useInitBody();
 
   return (
@@ -19,5 +19,3 @@ function App() {
     </Container>
   );
 }
-
-export default App;

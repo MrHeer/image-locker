@@ -1,5 +1,5 @@
-import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
-import { Button, ButtonProps } from "./button";
+import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { Button, type ButtonProps } from './button';
 
 type Props = ButtonProps & {
   onGrayscale: () => void;
@@ -8,13 +8,13 @@ type Props = ButtonProps & {
   onNone: () => void;
 };
 
-function FilterButton({
+export function FilterButton({
   onGrayscale,
   onInvert,
   onSepia,
   onNone,
   ...rest
-}: Props) {
+}: Props): JSX.Element {
   return (
     <Menu>
       <MenuButton as={Button} {...rest} />
@@ -27,5 +27,3 @@ function FilterButton({
     </Menu>
   );
 }
-
-export default FilterButton;

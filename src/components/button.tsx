@@ -1,11 +1,10 @@
-import { ForwardedRef, forwardRef } from "react";
+import { type ForwardedRef, forwardRef, type ReactElement } from 'react';
 import {
   Button as ChakraButton,
-  ButtonProps as ChakraButtonProps,
+  type ButtonProps as ChakraButtonProps,
   IconButton,
-} from "@chakra-ui/react";
-import { ReactElement } from "react";
-import { useIsMobile } from "../hooks";
+} from '@chakra-ui/react';
+import { useIsMobile } from '../hooks';
 
 export type ButtonProps = ChakraButtonProps & {
   icon: ReactElement;
@@ -15,12 +14,14 @@ export type ButtonProps = ChakraButtonProps & {
 function InnerButton(
   { icon, children, ...rest }: ButtonProps,
   ref: ForwardedRef<HTMLButtonElement>,
-) {
+): JSX.Element {
   const isMobile = useIsMobile();
   return isMobile ? (
     <IconButton ref={ref} icon={icon} aria-label={children} {...rest} />
   ) : (
-    <ChakraButton ref={ref} leftIcon={icon} children={children} {...rest} />
+    <ChakraButton ref={ref} leftIcon={icon} {...rest}>
+      {children}
+    </ChakraButton>
   );
 }
 

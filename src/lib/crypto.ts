@@ -12,32 +12,32 @@ const subtle = window.crypto.subtle;
  * Get some key material to use as input to the deriveKey method.
  * The key material is a password supplied by the user.
  */
-function getKeyMaterial(password: string) {
+function getKeyMaterial(password: string): Promise<CryptoKey> {
   const enc = new TextEncoder();
   return subtle.importKey(
-    "raw",
+    'raw',
     enc.encode(password),
-    { name: "PBKDF2" },
+    { name: 'PBKDF2' },
     false,
-    ["deriveBits", "deriveKey"],
+    ['deriveBits', 'deriveKey'],
   );
 }
 
 /*
  * Given some key material derive an AES-GCM key using PBKDF2.
  */
-function getKey(keyMaterial: CryptoKey) {
+function getKey(keyMaterial: CryptoKey): Promise<CryptoKey> {
   return subtle.deriveKey(
     {
-      name: "PBKDF2",
+      name: 'PBKDF2',
       salt,
       iterations: 100000,
-      hash: "SHA-256",
+      hash: 'SHA-256',
     },
     keyMaterial,
-    { name: "AES-GCM", length: 256 },
+    { name: 'AES-GCM', length: 256 },
     true,
-    ["encrypt", "decrypt"],
+    ['encrypt', 'decrypt'],
   );
 }
 
@@ -45,13 +45,16 @@ function getKey(keyMaterial: CryptoKey) {
  * Derive a key from a password supplied by the user, and use the key
  * to encrypt the data.
  */
-async function encrypt(data: BufferSource, password: string) {
+async function encrypt(
+  data: BufferSource,
+  password: string,
+): Promise<ArrayBuffer> {
   const keyMaterial = await getKeyMaterial(password);
   const key = await getKey(keyMaterial);
 
   return subtle.encrypt(
     {
-      name: "AES-GCM",
+      name: 'AES-GCM',
       iv,
     },
     key,
@@ -63,13 +66,16 @@ async function encrypt(data: BufferSource, password: string) {
  * Derive a key from a password supplied by the user, and use the key
  * to decrypt the ciphertext.
  */
-async function decrypt(data: BufferSource, password: string) {
+async function decrypt(
+  data: BufferSource,
+  password: string,
+): Promise<ArrayBuffer> {
   const keyMaterial = await getKeyMaterial(password);
   const key = await getKey(keyMaterial);
 
   return await subtle.decrypt(
     {
-      name: "AES-GCM",
+      name: 'AES-GCM',
       iv,
     },
     key,

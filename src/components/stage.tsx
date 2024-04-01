@@ -1,11 +1,11 @@
-import { Center } from "@chakra-ui/react";
-import { useMeasure } from "react-use";
-import { useSignals } from "@preact/signals-react/runtime";
-import Upload from "./upload";
-import Canvas from "./canvas";
-import { showCanvas } from "../signal";
+import { Center } from '@chakra-ui/react';
+import { useMeasure } from 'react-use';
+import { useSignals } from '@preact/signals-react/runtime';
+import { showCanvasSignal } from '../signal';
+import { Upload } from './upload';
+import { Canvas } from './canvas';
 
-function Stage() {
+export function Stage(): JSX.Element {
   useSignals();
   const [ref, { width, height }] = useMeasure();
 
@@ -16,7 +16,7 @@ function Stage() {
       }}
       h="full"
     >
-      {showCanvas.value ? (
+      {showCanvasSignal.value ? (
         <Canvas width={Math.round(width)} height={Math.round(height)} />
       ) : (
         <Upload />
@@ -24,5 +24,3 @@ function Stage() {
     </Center>
   );
 }
-
-export default Stage;
