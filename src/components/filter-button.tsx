@@ -5,9 +5,16 @@ type Props = ButtonProps & {
   onGrayscale: () => void;
   onInvert: () => void;
   onSepia: () => void;
+  onNone: () => void;
 };
 
-function FilterButton({ onGrayscale, onInvert, onSepia, ...rest }: Props) {
+function FilterButton({
+  onGrayscale,
+  onInvert,
+  onSepia,
+  onNone,
+  ...rest
+}: Props) {
   return (
     <Menu>
       <MenuButton as={Button} {...rest} />
@@ -15,6 +22,7 @@ function FilterButton({ onGrayscale, onInvert, onSepia, ...rest }: Props) {
         <MenuItem onClick={onGrayscale}>Grayscale</MenuItem>
         <MenuItem onClick={onInvert}>Invert</MenuItem>
         <MenuItem onClick={onSepia}>Speia</MenuItem>
+        <MenuItem onClick={onNone}>None</MenuItem>
       </MenuList>
     </Menu>
   );

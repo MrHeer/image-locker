@@ -14,7 +14,7 @@ pnpm dev
 
 ## Features
 
-- Upload image by click and drag.
+- Upload image by click and drop.
 - Filters
   - Grayscale
   - Invert
