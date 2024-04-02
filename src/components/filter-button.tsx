@@ -16,7 +16,7 @@ export function FilterButton({
   ...rest
 }: Props): JSX.Element {
   return (
-    <Menu>
+    <Menu autoSelect={false}>
       <MenuButton as={Button} {...rest} />
       <MenuList>
         <MenuItem onClick={onGrayscale}>Grayscale</MenuItem>
