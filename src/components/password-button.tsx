@@ -1,4 +1,10 @@
-import { useState, useRef, type MutableRefObject, useCallback } from 'react';
+import {
+  useState,
+  useRef,
+  type MutableRefObject,
+  type ReactNode,
+  useCallback,
+} from 'react';
 import {
   Button as ChakraButton,
   ButtonGroup,
@@ -24,12 +30,14 @@ interface PasswordFormProps {
   id: string;
   firstFieldRef: MutableRefObject<HTMLInputElement | null>;
   onOk: (password: string) => void;
+  helpText?: ReactNode;
 }
 
 function PasswordForm({
   id,
   firstFieldRef,
   onOk,
+  helpText,
 }: PasswordFormProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
@@ -70,9 +78,7 @@ function PasswordForm({
           onChange={debouncedCheckPassword}
         />
         {!isError ? (
-          <FormHelperText>
-            Enter the password you&apos;ad like to unlock the image.
-          </FormHelperText>
+          helpText && <FormHelperText>{helpText}</FormHelperText>
         ) : (
           <FormErrorMessage>{errorMessage}</FormErrorMessage>
         )}
@@ -99,11 +105,13 @@ function PasswordForm({
 type PasswordButtonProps = ButtonProps & {
   id: string;
   action: (password: string) => Promise<void>;
+  formHelpText?: ReactNode;
 };
 
 export function PasswordButton({
   id,
   action,
+  formHelpText,
   ...buttonProps
 }: PasswordButtonProps): JSX.Element {
   const firstFieldRef = useRef(null);
@@ -127,20 +135,20 @@ export function PasswordButton({
       initialFocusRef={firstFieldRef}
       onOpen={onOpen}
       onClose={onClose}
-      closeOnBlur={false}
       isLazy
     >
       <PopoverTrigger>
         <Button isLoading={loading} {...buttonProps} />
       </PopoverTrigger>
       <PopoverContent p={5} w={380}>
-        <FocusLock persistentFocus={false}>
+        <FocusLock>
           <PopoverArrow />
           <PopoverCloseButton />
           <PasswordForm
             id={id}
             firstFieldRef={firstFieldRef}
             onOk={handleSubmit}
+            helpText={formHelpText}
           />
         </FocusLock>
       </PopoverContent>
