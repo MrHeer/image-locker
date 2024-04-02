@@ -1,20 +1,22 @@
-import { useCallback, useState } from "react";
-import { Button, ButtonProps } from "./button";
+import { useCallback, useState } from 'react';
+import { Button, type ButtonProps } from './button';
 
 type Props = {
-  action?: () => Promise<void>;
+  action?: () => Promise<void> | void;
 } & ButtonProps;
 
-function ActionButton({ action, ...rest }: Props) {
+export function ActionButton({ action, ...rest }: Props): JSX.Element {
   const [loading, setLoading] = useState(false);
 
-  const handleClick = useCallback(async () => {
-    setLoading(true);
-    await action?.();
-    setLoading(false);
+  const handleClick = useCallback(() => {
+    const promise = action?.();
+    if (promise instanceof Promise) {
+      setLoading(true);
+      void promise.finally(() => {
+        setLoading(false);
+      });
+    }
   }, [action]);
 
   return <Button onClick={handleClick} isLoading={loading} {...rest} />;
 }
-
-export default ActionButton;

@@ -1,4 +1,4 @@
-import { useState, useRef, MutableRefObject, useCallback } from "react";
+import { useState, useRef, type MutableRefObject, useCallback } from 'react';
 import {
   Button as ChakraButton,
   ButtonGroup,
@@ -14,31 +14,23 @@ import {
   PopoverTrigger,
   Stack,
   useDisclosure,
-} from "@chakra-ui/react";
-import { useDebounceCallback } from "usehooks-ts";
-import PasswordInput from "./password-input";
-import { Button, ButtonProps } from "./button";
+} from '@chakra-ui/react';
+import { useDebounceCallback } from 'usehooks-ts';
+import { validators } from '../lib';
+import { PasswordInput } from './password-input';
+import { Button, type ButtonProps } from './button';
 
-function passwordChecker(password: string) {
-  if (password.length === 0) {
-    throw new Error("Password is required.");
-  }
-  if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters.");
-  }
-  const regex = new RegExp("^[A-Za-z0-9]+$");
-  if (regex.test(password) === false) {
-    throw new Error("Password must contain only letters and numbers.");
-  }
+interface PasswordFormProps {
+  id: string;
+  firstFieldRef: MutableRefObject<HTMLInputElement | null>;
+  onOk: (password: string) => void;
 }
 
-type PasswordFormProps = {
-  id: string;
-  firstFieldRef: MutableRefObject<HTMLInputElement>;
-  onOk: (password: string) => void;
-};
-
-const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
+function PasswordForm({
+  id,
+  firstFieldRef,
+  onOk,
+}: PasswordFormProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const isError = errorMessage !== null;
@@ -46,15 +38,22 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
   const inputId = `${id}-password`;
 
   const checkPassword = useCallback(() => {
-    const password = firstFieldRef?.current?.value ?? "";
     try {
-      passwordChecker(password);
+      const password = firstFieldRef.current?.value ?? '';
+      const validatedPassword = validators
+        .string()
+        .isRequired('Password is required.')
+        .min(6, 'Password must be at least 6 characters.')
+        .regex(
+          /^[A-Za-z0-9]+$/,
+          'Password must contain only letters and numbers.',
+        )
+        .validate(password);
+      setErrorMessage(null);
+      return validatedPassword;
     } catch (error) {
       setErrorMessage((error as Error).message);
-      return;
     }
-    setErrorMessage(null);
-    return password;
   }, [firstFieldRef]);
 
   const debouncedCheckPassword = useDebounceCallback(checkPassword, 500, {
@@ -72,7 +71,7 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
         />
         {!isError ? (
           <FormHelperText>
-            Enter the password you'd like to unlock the image.
+            Enter the password you&apos;ad like to unlock the image.
           </FormHelperText>
         ) : (
           <FormErrorMessage>{errorMessage}</FormErrorMessage>
@@ -95,28 +94,29 @@ const PasswordForm = ({ id, firstFieldRef, onOk }: PasswordFormProps) => {
       </ButtonGroup>
     </Stack>
   );
-};
+}
 
 type PasswordButtonProps = ButtonProps & {
   id: string;
   action: (password: string) => Promise<void>;
 };
 
-const PasswordButton = ({
+export function PasswordButton({
   id,
   action,
   ...buttonProps
-}: PasswordButtonProps) => {
-  const firstFieldRef = useRef(null!);
+}: PasswordButtonProps): JSX.Element {
+  const firstFieldRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const { onOpen, onClose, isOpen } = useDisclosure();
 
   const handleSubmit = useCallback(
-    async (password: string) => {
+    (password: string) => {
       onClose();
       setLoading(true);
-      await action(password);
-      setLoading(false);
+      void action(password).finally(() => {
+        setLoading(false);
+      });
     },
     [action, onClose],
   );
@@ -146,6 +146,4 @@ const PasswordButton = ({
       </PopoverContent>
     </Popover>
   );
-};
-
-export default PasswordButton;
+}

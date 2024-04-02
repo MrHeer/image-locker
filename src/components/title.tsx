@@ -1,7 +1,5 @@
-import { Heading } from "@chakra-ui/react";
+import { Heading } from '@chakra-ui/react';
 
-function Title() {
+export function Title(): JSX.Element {
   return <Heading textAlign="center">Image Locker</Heading>;
 }
-
-export default Title;

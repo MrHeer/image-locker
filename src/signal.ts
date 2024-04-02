@@ -1,35 +1,61 @@
-import { signal, computed, Signal } from "@preact/signals-react";
+import { signal, computed, type Signal } from '@preact/signals-react';
 
-type ImageState = {
+interface ImageState {
   name: string;
   type: string;
   data: ImageData;
-};
+}
 
-export const originalImageState = signal<ImageState | null>(null);
+const originalImageStateSignal = signal<ImageState | null>(null);
 
-export const imageState = signal<ImageState | null>(null);
+const imageStateSignal = signal<ImageState | null>(null);
 
-export const imageData = computed(() => imageState.value?.data);
+const imageDataSignal = computed(() => {
+  const state = getImageState(imageStateSignal);
+  return state.data;
+});
 
-export const showCanvas = computed(() => imageState.value !== null);
+const showCanvasSignal = computed(() => imageStateSignal.value !== null);
 
-export const actionDisabeled = computed(() => imageState.value === null);
+const actionDisabeledSignal = computed(() => imageStateSignal.value === null);
 
-export const updateImageData = (data: ImageData, overwriteOriginal = false) => {
-  const updateState = (state: Signal<ImageState | null>) => {
-    const value = state.value;
-    if (value) {
-      state.value = {
-        ...value,
-        data,
-      };
-    }
-  };
+function initImageState(state: ImageState): void {
+  originalImageStateSignal.value = state;
+  imageStateSignal.value = state;
+}
 
-  updateState(imageState);
+function clearImageState(): void {
+  originalImageStateSignal.value = null;
+  imageStateSignal.value = null;
+}
 
-  if (overwriteOriginal) {
-    updateState(originalImageState);
+function getImageState(imageState: Signal<ImageState | null>): ImageState {
+  const { value } = imageState;
+  if (value === null) {
+    throw new Error('Image not uploaded');
   }
+  return value;
+}
+
+function updateImageState(
+  imageState: Signal<ImageState | null>,
+  state: Partial<ImageState>,
+): void {
+  const value = getImageState(imageState);
+  imageState.value = {
+    ...value,
+    ...state,
+  };
+}
+
+export {
+  originalImageStateSignal,
+  imageStateSignal,
+  imageDataSignal,
+  showCanvasSignal,
+  actionDisabeledSignal,
+  initImageState,
+  clearImageState,
+  getImageState,
+  updateImageState,
 };

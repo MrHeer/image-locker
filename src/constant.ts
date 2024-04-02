@@ -1,1 +1,1 @@
-export const SUPPORTED_IMAGE_TYPE = "image/png";
+export const SUPPORTED_IMAGE_TYPE = 'image/png';

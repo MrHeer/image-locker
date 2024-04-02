@@ -1,3 +1,3 @@
-export { default as Title } from "./title";
-export { default as Stage } from "./stage";
-export { default as Actions } from "./actions";
+export { Title } from './title';
+export { Stage } from './stage';
+export { Actions } from './actions';

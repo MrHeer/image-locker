@@ -1,4 +1,4 @@
-import { Center, HStack, useToast } from "@chakra-ui/react";
+import { Center, HStack, useToast } from '@chakra-ui/react';
 import {
   CopyIcon,
   DeleteIcon,
@@ -6,9 +6,9 @@ import {
   EditIcon,
   LockIcon,
   UnlockIcon,
-} from "@chakra-ui/icons";
-import { useSignals } from "@preact/signals-react/runtime";
-import { actionDisabeled } from "../signal";
+} from '@chakra-ui/icons';
+import { useSignals } from '@preact/signals-react/runtime';
+import { actionDisabeledSignal } from '../signal';
 import {
   clearAction,
   copyAction,
@@ -16,16 +16,15 @@ import {
   filterAction,
   lockAction,
   unlockAction,
-} from "../actions";
-import ActionButton from "./action-button";
-import FilterButton from "./filter-button";
-import { grayscale, invert, sepia } from "../filters";
-import PasswordButton from "./password-button";
-import { none } from "../filters/none";
+} from '../actions';
+import { grayscale, invert, sepia, none } from '../filters';
+import { ActionButton } from './action-button';
+import { FilterButton } from './filter-button';
+import { PasswordButton } from './password-button';
 
-function Action() {
+export function Actions(): JSX.Element {
   useSignals();
-  const disabled = actionDisabeled.value;
+  const disabled = actionDisabeledSignal.value;
   const toast = useToast();
 
   return (
@@ -41,10 +40,18 @@ function Action() {
         <FilterButton
           isDisabled={disabled}
           icon={<EditIcon />}
-          onGrayscale={() => filterAction(grayscale)}
-          onInvert={() => filterAction(invert)}
-          onSepia={() => filterAction(sepia)}
-          onNone={() => filterAction(none)}
+          onGrayscale={() => {
+            filterAction(grayscale);
+          }}
+          onInvert={() => {
+            filterAction(invert);
+          }}
+          onSepia={() => {
+            filterAction(sepia);
+          }}
+          onNone={() => {
+            filterAction(none);
+          }}
         >
           Filter
         </FilterButton>
@@ -61,9 +68,9 @@ function Action() {
           action={async () => {
             try {
               await copyAction();
-              toast({ status: "success", title: "Copied" });
+              toast({ status: 'success', title: 'Copied' });
             } catch (error) {
-              toast({ status: "error", title: (error as Error).message });
+              toast({ status: 'error', title: (error as Error).message });
             }
           }}
         >
@@ -77,7 +84,7 @@ function Action() {
             try {
               await lockAction(password);
             } catch (error) {
-              toast({ status: "error", title: (error as Error).message });
+              toast({ status: 'error', title: (error as Error).message });
             }
           }}
         >
@@ -91,7 +98,7 @@ function Action() {
             try {
               await unlockAction(password);
             } catch (error) {
-              toast({ status: "error", title: (error as Error).message });
+              toast({ status: 'error', title: (error as Error).message });
             }
           }}
         >
@@ -101,5 +108,3 @@ function Action() {
     </Center>
   );
 }
-
-export default Action;
