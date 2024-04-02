@@ -16,21 +16,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useDebounceCallback } from 'usehooks-ts';
+import { validators } from '../lib';
 import { PasswordInput } from './password-input';
 import { Button, type ButtonProps } from './button';
-
-function passwordChecker(password: string): void {
-  if (password.length === 0) {
-    throw new Error('Password is required.');
-  }
-  if (password.length < 6) {
-    throw new Error('Password must be at least 6 characters.');
-  }
-  const regex = /^[A-Za-z0-9]+$/;
-  if (!regex.test(password)) {
-    throw new Error('Password must contain only letters and numbers.');
-  }
-}
 
 interface PasswordFormProps {
   id: string;
@@ -52,9 +40,17 @@ function PasswordForm({
   const checkPassword = useCallback(() => {
     try {
       const password = firstFieldRef.current?.value ?? '';
-      passwordChecker(password);
+      const validatedPassword = validators
+        .string()
+        .isRequired('Password is required.')
+        .min(6, 'Password must be at least 6 characters.')
+        .regex(
+          /^[A-Za-z0-9]+$/,
+          'Password must contain only letters and numbers.',
+        )
+        .validate(password);
       setErrorMessage(null);
-      return password;
+      return validatedPassword;
     } catch (error) {
       setErrorMessage((error as Error).message);
     }
