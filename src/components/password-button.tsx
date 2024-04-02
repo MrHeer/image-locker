@@ -50,14 +50,14 @@ function PasswordForm({
   const inputId = `${id}-password`;
 
   const checkPassword = useCallback(() => {
-    const password = firstFieldRef.current?.value ?? '';
     try {
+      const password = firstFieldRef.current?.value ?? '';
       passwordChecker(password);
+      setErrorMessage(null);
+      return password;
     } catch (error) {
       setErrorMessage((error as Error).message);
     }
-    setErrorMessage(null);
-    return password;
   }, [firstFieldRef]);
 
   const debouncedCheckPassword = useDebounceCallback(checkPassword, 500, {

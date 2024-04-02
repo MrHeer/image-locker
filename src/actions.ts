@@ -29,9 +29,9 @@ function clearAction(): void {
 }
 
 function filterAction(filter: Filter): void {
-  const state = getImageState(originalImageStateSignal);
-  const data = filter(state.data);
-  updateImageState(imageStateSignal, { ...state, data });
+  const { data } = getImageState(originalImageStateSignal);
+  const newData = filter(data);
+  updateImageState(imageStateSignal, { data: newData });
 }
 
 async function downloadAction(): Promise<void> {
@@ -54,7 +54,7 @@ async function lockAction(password: string): Promise<void> {
   const base64 = await imageDataToBase64(data, type);
   const lockedBase64 = await lock(base64, type, password);
   const lockedData = await base64ToImageData(lockedBase64, type);
-  updateImageState(imageStateSignal, { ...state, data: lockedData });
+  updateImageState(imageStateSignal, { data: lockedData });
 }
 
 async function unlockAction(password: string): Promise<void> {
@@ -63,7 +63,7 @@ async function unlockAction(password: string): Promise<void> {
   const base64 = await imageDataToBase64(data, type);
   const unlockedBase64 = await unlock(base64, type, password);
   const unlockedData = await base64ToImageData(unlockedBase64, type);
-  updateImageState(imageStateSignal, { ...state, data: unlockedData });
+  updateImageState(imageStateSignal, { data: unlockedData });
 }
 
 export {
