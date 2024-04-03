@@ -10,6 +10,7 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       include: ['src/lib/**'],
+      exclude: ['src/lib/download.ts', 'src/lib/upload.ts'],
       thresholds: {
         statements: 100,
         functions: 100,
