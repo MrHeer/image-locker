@@ -2,8 +2,13 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
+    browser: {
+      enabled: true,
+      headless: true,
+      name: 'chrome',
+    },
     coverage: {
+      provider: 'istanbul',
       include: ['src/lib/**'],
       thresholds: {
         statements: 100,
