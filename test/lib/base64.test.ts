@@ -6,7 +6,7 @@ const buffer = new Uint8Array([104, 101, 108, 108, 111]);
 
 test('base64 to buffer', () => {
   const expected = new Uint8Array(base64ToBuffer(base64));
-  expect(buffer.toString()).toBe(expected.toString());
+  expect(buffer).toStrictEqual(expected);
 });
 
 test('buffer to base64', () => {
