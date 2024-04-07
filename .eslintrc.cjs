@@ -11,7 +11,12 @@ module.exports = {
     require.resolve('@vercel/style-guide/eslint/typescript'),
     require.resolve('@vercel/style-guide/eslint/vitest'),
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs', 'vite.config.ts'],
+  ignorePatterns: [
+    'dist',
+    '.eslintrc.cjs',
+    'vite.config.ts',
+    'vitest.config.ts',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project,

@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
+    "coverage": "vitest --coverage",
     "dev": "vite",
     "eslint-check": "eslint --max-warnings=0 .",
     "format": "prettier --write .",
     "prepare": "husky",
     "prettier-check": "prettier --check .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
@@ -33,12 +35,17 @@
     "@types/react-dom": "^18.2.21",
     "@vercel/style-guide": "^6.0.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/browser": "^1.4.0",
+    "@vitest/coverage-istanbul": "^1.4.0",
+    "@vitest/ui": "^1.4.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "3.2.5",
     "typescript": "^5.2.2",
-    "vite": "^5.1.6"
+    "vite": "^5.1.6",
+    "vitest": "^1.4.0",
+    "webdriverio": "^8.35.1"
   }
 }
