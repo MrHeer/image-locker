@@ -9,10 +9,7 @@ const BASE64_TABLE =
 const REGEX = new RegExp(`^${IDENTITY}(?<base64>.+)${IDENTITY}=*$`);
 
 function base64CharToColor(base64: string): number {
-  if (base64.length !== 1) {
-    throw new Error('Need a character.');
-  }
-  if (BASE64_TABLE.includes(base64)) {
+  if (base64.length === 1 && BASE64_TABLE.includes(base64)) {
     return BASE64_TABLE.indexOf(base64) * 4;
   }
   if (base64 === '=') {
@@ -24,7 +21,8 @@ function base64CharToColor(base64: string): number {
 function colorToBase64Char(color: number): string {
   if (color === 255) return '=';
   const char = BASE64_TABLE[color / 4];
-  if (char === undefined) throw new Error('Color is out of range, [0-255]');
+  if (char === undefined)
+    throw new Error('Could not convert color to base64 character.');
   return char;
 }
 
