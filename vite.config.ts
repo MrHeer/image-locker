@@ -10,4 +10,14 @@ export default defineConfig({
       usePolling: true,
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          '@chakra-react': ['@chakra-ui/react'],
+          'framer-motion': ['framer-motion'],
+        },
+      },
+    },
+  },
 });
