@@ -5,7 +5,7 @@ import { uploadAction } from '../actions';
 import { upload } from '../lib';
 import { SUPPORTED_IMAGE_TYPE } from '../constant';
 
-async function dropHandler(files: File[]): Promise<void> {
+async function dropFileHandler(files: File[]): Promise<void> {
   if (files.length !== 1) {
     throw new Error('Only 1 file allowed.');
   }
@@ -19,21 +19,42 @@ async function dropHandler(files: File[]): Promise<void> {
   await uploadAction(file);
 }
 
+async function dropUriHandler(uri: string): Promise<void> {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  const { type } = blob;
+  if (type !== SUPPORTED_IMAGE_TYPE) {
+    throw new Error('Only PNG file allowed.');
+  }
+
+  const file = new File([blob], 'image.png', { type });
+  await uploadAction(file);
+}
+
 export function Upload(): JSX.Element {
   const toast = useToast();
 
-  const toastMessage = (): void => {
-    toast({ status: 'warning', title: 'Please drop a PNG file.' });
-  };
+  const toastError = useCallback(
+    (message: string): void => {
+      toast({ status: 'error', title: message });
+    },
+    [toast],
+  );
 
   const [bond, { over }] = useDropArea({
     onFiles: (files) => {
-      dropHandler(files).catch((error) => {
-        toast({ status: 'warning', title: (error as Error).message });
+      dropFileHandler(files).catch((error) => {
+        toastError((error as Error).message);
       });
     },
-    onUri: toastMessage,
-    onText: toastMessage,
+    onUri: (uri) => {
+      dropUriHandler(uri).catch((error) => {
+        toastError((error as Error).message);
+      });
+    },
+    onText: (): void => {
+      toastError('Please drop a PNG file.');
+    },
   });
 
   useLayoutEffect(() => {
