@@ -14,8 +14,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          '@chakra-react': ['@chakra-ui/react'],
-          'framer-motion': ['framer-motion'],
+          react: ['react', 'react-dom'],
+          motion: ['framer-motion'],
+          chakra: ['@chakra-ui/react', '@chakra-ui/icons'],
         },
       },
     },
