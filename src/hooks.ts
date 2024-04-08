@@ -15,23 +15,25 @@ type UserRunAsyncReturn = [boolean, (asyncFn: () => Promise<void>) => void];
 
 function useRunAsync(options?: UseRunAsyncOptions): UserRunAsyncReturn {
   const [loading, setLoading] = useState(false);
+
   const runAsync = useCallback(
     (asyncFn: () => Promise<void>) => {
       const fn = async (): Promise<void> => {
         setLoading(true);
-        options?.pre?.();
         try {
+          options?.pre?.();
           await asyncFn();
+          options?.post?.();
         } catch (error) {
           options?.onError?.(error);
         }
-        options?.post?.();
         setLoading(false);
       };
       return fn();
     },
     [options],
   );
+
   return [loading, runAsync] as const;
 }
 
