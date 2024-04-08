@@ -23,6 +23,7 @@ import {
 } from '@chakra-ui/react';
 import { useDebounceCallback } from 'usehooks-ts';
 import { validators } from '../lib';
+import { useRunAsync } from '../hooks';
 import { PasswordInput } from './password-input';
 import { Button, type ButtonProps } from './button';
 
@@ -115,18 +116,18 @@ export function PasswordButton({
   ...buttonProps
 }: PasswordButtonProps): JSX.Element {
   const firstFieldRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const { onOpen, onClose, isOpen } = useDisclosure();
+  const [loading, runAsync] = useRunAsync({
+    pre: () => {
+      onClose();
+    },
+  });
 
   const handleSubmit = useCallback(
     (password: string) => {
-      onClose();
-      setLoading(true);
-      void action(password).finally(() => {
-        setLoading(false);
-      });
+      runAsync(() => action(password));
     },
-    [action, onClose],
+    [action, runAsync],
   );
 
   return (

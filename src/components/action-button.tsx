@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useRunAsync } from '../hooks';
 import { Button, type ButtonProps } from './button';
 
 type Props = {
@@ -6,17 +7,14 @@ type Props = {
 } & ButtonProps;
 
 export function ActionButton({ action, ...rest }: Props): JSX.Element {
-  const [loading, setLoading] = useState(false);
+  const [loading, runAsync] = useRunAsync();
 
   const handleClick = useCallback(() => {
     const promise = action?.();
     if (promise instanceof Promise) {
-      setLoading(true);
-      void promise.finally(() => {
-        setLoading(false);
-      });
+      runAsync(() => promise);
     }
-  }, [action]);
+  }, [action, runAsync]);
 
   return <Button onClick={handleClick} isLoading={loading} {...rest} />;
 }
