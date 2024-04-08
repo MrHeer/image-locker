@@ -1,9 +1,10 @@
 import { useCallback, useLayoutEffect } from 'react';
 import { useDropArea } from 'react-use';
-import { Center, useToast } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import { uploadAction } from '../actions';
 import { upload } from '../lib';
 import { SUPPORTED_IMAGE_TYPE } from '../constant';
+import { useRunAsync } from '../hooks';
 
 async function dropFileHandler(files: File[]): Promise<void> {
   if (files.length !== 1) {
@@ -20,8 +21,7 @@ async function dropFileHandler(files: File[]): Promise<void> {
 }
 
 async function dropUriHandler(uri: string): Promise<void> {
-  const response = await fetch(uri);
-  const blob = await response.blob();
+  const blob = await fetch(uri).then((res) => res.blob());
   const { type } = blob;
   if (type !== SUPPORTED_IMAGE_TYPE) {
     throw new Error('Only PNG file allowed.');
@@ -41,16 +41,18 @@ export function Upload(): JSX.Element {
     [toast],
   );
 
+  const [loading, runAsync] = useRunAsync({
+    onError: (error) => {
+      toastError((error as Error).message);
+    },
+  });
+
   const [bond, { over }] = useDropArea({
     onFiles: (files) => {
-      dropFileHandler(files).catch((error) => {
-        toastError((error as Error).message);
-      });
+      runAsync(() => dropFileHandler(files));
     },
     onUri: (uri) => {
-      dropUriHandler(uri).catch((error) => {
-        toastError((error as Error).message);
-      });
+      runAsync(() => dropUriHandler(uri));
     },
     onText: (): void => {
       toastError('Please drop a PNG file.');
@@ -66,27 +68,20 @@ export function Upload(): JSX.Element {
   }, [over]);
 
   const handleUpload = useCallback(() => {
-    void upload(SUPPORTED_IMAGE_TYPE)
-      .then(uploadAction)
-      .catch((error) => {
-        toast({ status: 'error', title: (error as Error).message });
-      });
-  }, [toast]);
+    runAsync(() => upload(SUPPORTED_IMAGE_TYPE).then(uploadAction));
+  }, [runAsync]);
 
   return (
-    <Center
+    <Button
       w={64}
       h={24}
-      transition="all 250ms"
-      border="solid 1px"
-      color={over ? 'blue.400' : 'gray.500'}
-      borderColor={over ? 'blue.400' : 'gray.500'}
-      _hover={{ borderColor: 'blue.400', color: 'blue.400', cursor: 'pointer' }}
-      borderRadius="xl"
+      variant="outline"
+      colorScheme="cyan"
       onClick={handleUpload}
+      isLoading={loading}
       {...bond}
     >
       Click or drop to upload image
-    </Center>
+    </Button>
   );
 }
