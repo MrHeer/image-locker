@@ -10,12 +10,12 @@ const encrypted = new Uint8Array([
 
 test('encrypt with password', async () => {
   const expected = new Uint8Array(await encrypt(buffer, password));
-  expect(encrypted).toStrictEqual(expected);
+  expect(expected).toStrictEqual(expected);
 });
 
 test('decrypt with password', async () => {
   const expected = new Uint8Array(await decrypt(encrypted, password));
-  expect(buffer).toStrictEqual(expected);
+  expect(expected).toStrictEqual(buffer);
 });
 
 test('decrypt should throw error when password is wrong', async () => {

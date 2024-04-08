@@ -6,7 +6,7 @@ const IDENTITY = 'IMAGELOCKER';
 const BASE64_TABLE =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-const REGEX = new RegExp(`^${IDENTITY}(?<base64>.+)${IDENTITY}=*$`);
+const REGEX = new RegExp(`^${IDENTITY}(?<base64>.+)${IDENTITY}.*$`);
 
 function base64CharToColor(base64: string): number {
   if (base64.length === 1 && BASE64_TABLE.includes(base64)) {
@@ -26,6 +26,27 @@ function colorToBase64Char(color: number): string {
   return char;
 }
 
+function paddingEnd(
+  text: string,
+  maxLength: number,
+  random: () => string,
+): string {
+  const paddingLength = maxLength - text.length;
+  let padding = '';
+  for (let i = 0; i < paddingLength; i++) {
+    const paddingChar = random()[0];
+    padding += paddingChar;
+  }
+  return text + padding;
+}
+
+function randomBase64Char(): string {
+  const randomIndex = Math.floor(Math.random() * BASE64_TABLE.length);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- randomIndex is in range
+  return BASE64_TABLE[randomIndex]!;
+}
+
 /**
  * When RGBA data including transparent colors is obtained from Canvas usinggetImageData
  * getImageData, the RGB values may differ from the imagine values.
@@ -37,9 +58,10 @@ async function encode(base64: string, type: string): Promise<string> {
   const pixelLength = (length + remainder) / 3;
   const width = Math.ceil(Math.sqrt(pixelLength));
   const imageData = new ImageData(width, width);
-  const paddedBase64 = `${IDENTITY}${base64}${IDENTITY}`.padEnd(
+  const paddedBase64 = paddingEnd(
+    `${IDENTITY}${base64}${IDENTITY}`,
     width * width * 3,
-    '=',
+    randomBase64Char,
   );
   for (let i = 0; i < width * width; i++) {
     imageData.data[i * 4] = base64CharToColor(paddedBase64.charAt(i * 3));
@@ -81,18 +103,25 @@ function isLocked(decodedBase64: string): boolean {
   return REGEX.test(decodedBase64);
 }
 
-async function unlock(
-  base64: string,
+async function extractEncryptedBase64(
+  lockedbase64: string,
   type: string,
-  password: string,
 ): Promise<string> {
-  const decodedBase64 = await decode(base64, type);
+  const decodedBase64 = await decode(lockedbase64, type);
   if (!isLocked(decodedBase64)) {
     throw new Error('This image is not locked.');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-  const encryptedBase64 = REGEX.exec(decodedBase64)!.groups!.base64!;
+  return REGEX.exec(decodedBase64)!.groups!.base64!;
+}
+
+async function unlock(
+  lockedBase64: string,
+  type: string,
+  password: string,
+): Promise<string> {
+  const encryptedBase64 = await extractEncryptedBase64(lockedBase64, type);
   const encryptedBuffer = base64ToBuffer(encryptedBase64);
   try {
     const decryptedBuffer = await decrypt(encryptedBuffer, password);
@@ -103,4 +132,4 @@ async function unlock(
   }
 }
 
-export { lock, unlock };
+export { lock, unlock, extractEncryptedBase64 };
