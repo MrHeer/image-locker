@@ -8,7 +8,8 @@ function useIsMobile(): boolean {
 interface UseRunAsyncOptions {
   pre?: () => void;
   post?: () => void;
-  onError?: (err: unknown) => void;
+  onError?: (error: unknown) => void;
+  onFinally?: () => void;
 }
 
 type UserRunAsyncReturn = [boolean, (asyncFn: () => Promise<void>) => void];
@@ -19,15 +20,17 @@ function useRunAsync(options?: UseRunAsyncOptions): UserRunAsyncReturn {
   const runAsync = useCallback(
     (asyncFn: () => Promise<void>) => {
       const fn = async (): Promise<void> => {
-        setLoading(true);
         try {
+          setLoading(true);
           options?.pre?.();
           await asyncFn();
           options?.post?.();
         } catch (error) {
           options?.onError?.(error);
+        } finally {
+          options?.onFinally?.();
+          setLoading(false);
         }
-        setLoading(false);
       };
       return fn();
     },
