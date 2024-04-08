@@ -22,23 +22,23 @@ const imageData = new ImageData(1, 1);
 test('blob to image data', async () => {
   const blob = new Blob([imageBuffer], { type: SUPPORTED_IMAGE_TYPE });
   const expected = await blobToImageData(blob);
-  expect(imageData).toStrictEqual(expected);
+  expect(expected).toStrictEqual(imageData);
 });
 
 test('image data to blob', async () => {
   const blob = await imageDataToBlob(imageData, SUPPORTED_IMAGE_TYPE);
   const expected = new Uint8Array(await blob.arrayBuffer());
-  expect(imageBuffer).toStrictEqual(expected);
+  expect(expected).toStrictEqual(imageBuffer);
 });
 
 test('base64 to image data', async () => {
   const expected = await base64ToImageData(base64, SUPPORTED_IMAGE_TYPE);
-  expect(imageData).toStrictEqual(expected);
+  expect(expected).toStrictEqual(imageData);
 });
 
 test('image data to base64', async () => {
   const expected = await imageDataToBase64(imageData, SUPPORTED_IMAGE_TYPE);
-  expect(base64).toBe(expected);
+  expect(expected).toBe(base64);
 });
 
 class MockOffscreenCanvas {

@@ -1,5 +1,10 @@
 import { test, expect, vi } from 'vitest';
-import { imageDataToBase64, lock, unlock } from '../../src/lib';
+import {
+  extractEncryptedBase64,
+  imageDataToBase64,
+  lock,
+  unlock,
+} from '../../src/lib';
 import { SUPPORTED_IMAGE_TYPE } from '../../src/constant';
 
 const base64 =
@@ -8,16 +13,21 @@ const base64 =
 const password = 'image-locker';
 
 const lockedBase64 =
-  'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAORJREFUKFNdjRFww2AYQN9/NywUArnr7vZjIBAoDAKBQaEQKBQLg8AgEAgUBoVBITAoBAo/DIKB3q1QLAQCvVtgEIxtMAjk7tsNu2fvyVPaQ/rWRfcDjW8Iw4B4dOShblltNaq6xGI3PrNzguNmzKOU7OcRz7ScgxVq45fSWwEbJ8MUJfoyI881y2VNat+jKvMkcQHFMcZ4Dod6RDqEJEnJLrlFdcOnTDsX40c03RirLsleeqJTTvX8t1hPZV4dyMMFN6c39OKV8f6bYGdxN9mjPGxpXU0/NPgfX7xzjRIR+deu9BewQVghGy63sAAAAABJRU5ErkJggg==';
+  'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAP1JREFUKFMVzZFzw1AAwOHfuxsUCoVC7ra7PRgEAoHCIBAoBAqBQrEQCBQeBAqDQWEwCAwKgcKDQaAQKBQCg0IgUAgMgoFBYRDI3dvt+wc+IV1M3zrIfqDxNGHoo8Zn5nXL+l0iqqsyVuMRXBJsJ2URb0l/I1zdcvHXiJ1XmH7qs7NTdF4grwFZJlmtarbWM6LSG6NyyM8K7dqc6jHbISRJCvbJA6Ibvs2sc9BeTNNNmNYF6VtPXGZUr//Fy8wsqhNZuOSu/EQuP5gcbvj7KY/3B4SLZVpH0g8NXhbwlJdYcwh+RmQqRkRfezPmRnGsiFqFb19QI81qs6E4RvwBkIFkBx0oQroAAAAASUVORK5CYII=';
+
+const encryptedBase64 =
+  'zYlD0oyFcqd/yz1c5rrLdIVosoCKM/jYobK4zhPtfU9AehpJOx+gYlou7cMBqzpbPUb6D3jPBRDEvCYMfFy8M6/3H5CwIcmCgr2NPYLpIycoKhfN0S7bmQcW6krfoTb45g==';
 
 test('lock with password', async () => {
-  const expected = await lock(base64, SUPPORTED_IMAGE_TYPE, password);
-  expect(lockedBase64).toBe(expected);
+  const locked = await lock(base64, SUPPORTED_IMAGE_TYPE, password);
+  const expected = await extractEncryptedBase64(locked, SUPPORTED_IMAGE_TYPE);
+
+  expect(expected).toBe(encryptedBase64);
 });
 
 test('unlock with password', async () => {
   const expected = await unlock(lockedBase64, SUPPORTED_IMAGE_TYPE, password);
-  expect(base64).toBe(expected);
+  expect(expected).toBe(base64);
 });
 
 test('unlock with not encrypted base64', async () => {
