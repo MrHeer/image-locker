@@ -54,6 +54,7 @@ async function lockAction(password: string): Promise<void> {
   const base64 = await imageDataToBase64(data, type);
   const lockedBase64 = await lock(base64, type, password);
   const lockedData = await base64ToImageData(lockedBase64, type);
+  updateImageState(originalImageStateSignal, { data: lockedData });
   updateImageState(imageStateSignal, { data: lockedData });
 }
 
@@ -63,6 +64,7 @@ async function unlockAction(password: string): Promise<void> {
   const base64 = await imageDataToBase64(data, type);
   const unlockedBase64 = await unlock(base64, type, password);
   const unlockedData = await base64ToImageData(unlockedBase64, type);
+  updateImageState(originalImageStateSignal, { data: unlockedData });
   updateImageState(imageStateSignal, { data: unlockedData });
 }
 

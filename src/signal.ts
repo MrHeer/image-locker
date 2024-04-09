@@ -11,11 +11,13 @@ const originalImageStateSignal = signal<ImageState | null>(null);
 const imageStateSignal = signal<ImageState | null>(null);
 
 const imageDataSignal = computed(() => {
-  const state = getImageState(imageStateSignal);
-  return state.data;
+  try {
+    const state = getImageState(imageStateSignal);
+    return state.data;
+  } catch (error) {
+    return null;
+  }
 });
-
-const showCanvasSignal = computed(() => imageStateSignal.value !== null);
 
 const actionDisabeledSignal = computed(() => imageStateSignal.value === null);
 
@@ -52,7 +54,6 @@ export {
   originalImageStateSignal,
   imageStateSignal,
   imageDataSignal,
-  showCanvasSignal,
   actionDisabeledSignal,
   initImageState,
   clearImageState,

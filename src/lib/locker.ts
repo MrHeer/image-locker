@@ -21,8 +21,7 @@ function base64CharToColor(base64: string): number {
 function colorToBase64Char(color: number): string {
   if (color === 255) return '=';
   const char = BASE64_TABLE[color / 4];
-  if (char === undefined)
-    throw new Error('Could not convert color to base64 character.');
+  if (char === undefined) throw new Error('This image is not encoded.');
   return char;
 }
 
@@ -111,7 +110,6 @@ async function extractEncryptedBase64(
   if (!isLocked(decodedBase64)) {
     throw new Error('This image is not locked.');
   }
-
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
   return REGEX.exec(decodedBase64)!.groups!.base64!;
 }
