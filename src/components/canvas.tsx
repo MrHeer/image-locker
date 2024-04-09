@@ -1,18 +1,18 @@
-import { useCallback, useRef } from 'react';
-import { useAsync } from 'react-use';
-import { useSignals } from '@preact/signals-react/runtime';
-import { imageDataSignal } from '../signal';
+import { Box } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useAsync, usePreviousDistinct } from 'react-use';
 
 export function Canvas({
   width,
   height,
+  imageData,
 }: {
   width: number;
   height: number;
+  imageData: ImageData;
 }): JSX.Element {
-  useSignals();
   const ref = useRef<HTMLCanvasElement>(null);
-  const imageData = imageDataSignal.value;
 
   const drawIamge = useCallback(
     async (context: CanvasRenderingContext2D, image: ImageData) => {
@@ -41,7 +41,48 @@ export function Canvas({
     if (context) {
       await drawIamge(context, imageData);
     }
-  }, [width, height, drawIamge, imageData]);
+  }, [drawIamge, imageData]);
 
   return <canvas ref={ref} width={width} height={height} />;
+}
+
+export function SpreadCanvas({
+  width,
+  height,
+  imageData,
+}: {
+  width: number;
+  height: number;
+  imageData: ImageData;
+}): JSX.Element {
+  const [motionKey, setMotionKey] = useState(0);
+  const prevImageData = usePreviousDistinct(imageData);
+
+  useLayoutEffect(() => {
+    if (prevImageData) {
+      setMotionKey((prevKey) => prevKey + 1);
+    }
+  }, [prevImageData]);
+
+  return (
+    <Box width={width} height={height}>
+      <Box position="absolute">
+        {prevImageData ? (
+          <Canvas width={width} height={height} imageData={prevImageData} />
+        ) : null}
+      </Box>
+      <motion.div
+        key={motionKey}
+        style={{
+          position: 'absolute',
+          backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ type: 'spring', bounce: 0 }}
+      >
+        <Canvas width={width} height={height} imageData={imageData} />
+      </motion.div>
+    </Box>
+  );
 }

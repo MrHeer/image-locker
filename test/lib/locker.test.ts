@@ -33,7 +33,7 @@ test('unlock with password', async () => {
 test('unlock with not encrypted base64', async () => {
   await expect(() =>
     unlock(base64, SUPPORTED_IMAGE_TYPE, password),
-  ).rejects.toThrowError('This image is not locked');
+  ).rejects.toThrowError('This image is not locked.');
 });
 
 test('unlock with wrong password', async () => {
@@ -59,5 +59,5 @@ test('could not convert color to base64', async () => {
   const invalidBase64 = await imageDataToBase64(image, SUPPORTED_IMAGE_TYPE);
   await expect(() =>
     unlock(invalidBase64, SUPPORTED_IMAGE_TYPE, password),
-  ).rejects.toThrowError('Could not convert color to base64 character.');
+  ).rejects.toThrowError('This image is not encoded.');
 });
