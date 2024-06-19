@@ -80,7 +80,7 @@ export function Actions(): JSX.Element {
           id="lock"
           isDisabled={disabled}
           icon={<LockIcon />}
-          formHelpText="Enter the password you'd like to unlock the image."
+          formHelpText="Enter the password to lock the image."
           action={async (password) => {
             try {
               await lockAction(password);
