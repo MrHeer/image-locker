@@ -53,6 +53,7 @@ function PasswordForm({
         .string()
         .isRequired('Password is required.')
         .min(6, 'Password must be at least 6 characters.')
+        .max(12, 'Password must be at most 12 characters.')
         .regex(
           /^[A-Za-z0-9]+$/,
           'Password must contain only letters and numbers.',
