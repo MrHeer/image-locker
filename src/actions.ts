@@ -8,7 +8,6 @@ import {
 } from './signal';
 import { type Filter } from './filters';
 import {
-  base64ToImageData,
   blobToImageData,
   download,
   imageDataToBase64,
@@ -51,9 +50,7 @@ async function copyAction(): Promise<void> {
 async function lockAction(password: string): Promise<void> {
   const state = getImageState(imageStateSignal);
   const { type, data } = state;
-  const base64 = await imageDataToBase64(data, type);
-  const lockedBase64 = await lock(base64, type, password);
-  const lockedData = await base64ToImageData(lockedBase64, type);
+  const lockedData = await lock(data, type, password);
   updateImageState(originalImageStateSignal, { data: lockedData });
   updateImageState(imageStateSignal, { data: lockedData });
 }
@@ -61,9 +58,7 @@ async function lockAction(password: string): Promise<void> {
 async function unlockAction(password: string): Promise<void> {
   const state = getImageState(imageStateSignal);
   const { type, data } = state;
-  const base64 = await imageDataToBase64(data, type);
-  const unlockedBase64 = await unlock(base64, type, password);
-  const unlockedData = await base64ToImageData(unlockedBase64, type);
+  const unlockedData = await unlock(data, type, password);
   updateImageState(originalImageStateSignal, { data: unlockedData });
   updateImageState(imageStateSignal, { data: unlockedData });
 }
