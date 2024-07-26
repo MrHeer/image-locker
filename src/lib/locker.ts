@@ -1,6 +1,6 @@
 import { bufferToBase64, base64ToBuffer } from './base64';
 import { decrypt, encrypt } from './crypto';
-import { base64ToImageData, imageDataToBase64 } from './image';
+import { blobToImageData, imageDataToBlob } from './image';
 
 const IDENTITY = 'IMAGELOCKER';
 const BASE64_TABLE =
@@ -51,7 +51,8 @@ function randomBase64Char(): string {
  * getImageData, the RGB values may differ from the imagine values.
  * https://dev.to/yoya/canvas-getimagedata-premultiplied-alpha-150b
  */
-async function encode(base64: string, type: string): Promise<string> {
+function encode(buffer: ArrayBuffer): ImageData {
+  const base64 = bufferToBase64(buffer);
   const length = base64.length + IDENTITY.length * 2;
   const remainder = length % 3;
   const pixelLength = (length + remainder) / 3;
@@ -73,40 +74,40 @@ async function encode(base64: string, type: string): Promise<string> {
     imageData.data[i * 4 + 3] = 255;
   }
 
-  return imageDataToBase64(imageData, type);
+  return imageData;
 }
 
-async function decode(base64: string, type: string): Promise<string> {
-  const imageData = await base64ToImageData(base64, type);
-  const originBase64Array: string[] = [];
-  imageData.data
+async function decode(image: ImageData): Promise<ArrayBuffer> {
+  // make it non-blocking
+  await new Promise((resolve) => {
+    setTimeout(resolve);
+  });
+  const base64Array: string[] = [];
+  image.data
     .filter((_, index) => index % 4 !== 3)
     .forEach((color) => {
-      originBase64Array.push(colorToBase64Char(color));
+      base64Array.push(colorToBase64Char(color));
     });
-  return originBase64Array.join('');
+  const base64 = base64Array.join('');
+  const encryptedBase64 = extractEncryptedBase64(base64);
+  return base64ToBuffer(encryptedBase64);
 }
 
 async function lock(
-  base64: string,
+  image: ImageData,
   type: string,
   password: string,
-): Promise<string> {
-  const buffer = base64ToBuffer(base64);
-  const encryptedBuffer = await encrypt(buffer, password);
-  const encryptedBase64 = bufferToBase64(encryptedBuffer);
-  return encode(encryptedBase64, type);
+): Promise<ImageData> {
+  const blob = await imageDataToBlob(image, type);
+  const encryptedBuffer = await encrypt(await blob.arrayBuffer(), password);
+  return encode(encryptedBuffer);
 }
 
 function isLocked(decodedBase64: string): boolean {
   return REGEX.test(decodedBase64);
 }
 
-async function extractEncryptedBase64(
-  lockedbase64: string,
-  type: string,
-): Promise<string> {
-  const decodedBase64 = await decode(lockedbase64, type);
+function extractEncryptedBase64(decodedBase64: string): string {
   if (!isLocked(decodedBase64)) {
     throw new Error('This image is not locked.');
   }
@@ -115,19 +116,17 @@ async function extractEncryptedBase64(
 }
 
 async function unlock(
-  lockedBase64: string,
+  lockedImage: ImageData,
   type: string,
   password: string,
-): Promise<string> {
-  const encryptedBase64 = await extractEncryptedBase64(lockedBase64, type);
-  const encryptedBuffer = base64ToBuffer(encryptedBase64);
+): Promise<ImageData> {
+  const encryptedBuffer = await decode(lockedImage);
   try {
     const decryptedBuffer = await decrypt(encryptedBuffer, password);
-    const originBase64 = bufferToBase64(decryptedBuffer);
-    return originBase64;
+    return blobToImageData(new Blob([decryptedBuffer], { type }));
   } catch (error) {
     throw new Error('The password is incorrect.');
   }
 }
 
-export { lock, unlock, extractEncryptedBase64 };
+export { encode, decode, lock, unlock };
