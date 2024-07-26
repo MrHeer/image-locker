@@ -78,20 +78,19 @@ function encode(buffer: ArrayBuffer): ImageData {
 }
 
 async function decode(image: ImageData): Promise<ArrayBuffer> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const base64Array: string[] = [];
-      image.data
-        .filter((_, index) => index % 4 !== 3)
-        .forEach((color) => {
-          base64Array.push(colorToBase64Char(color));
-        });
-      const base64 = base64Array.join('');
-      const encryptedBase64 = extractEncryptedBase64(base64);
-      const buffer = base64ToBuffer(encryptedBase64);
-      resolve(buffer);
-    });
+  // make it non-blocking
+  await new Promise((resolve) => {
+    setTimeout(resolve);
   });
+  const base64Array: string[] = [];
+  image.data
+    .filter((_, index) => index % 4 !== 3)
+    .forEach((color) => {
+      base64Array.push(colorToBase64Char(color));
+    });
+  const base64 = base64Array.join('');
+  const encryptedBase64 = extractEncryptedBase64(base64);
+  return base64ToBuffer(encryptedBase64);
 }
 
 async function lock(
@@ -130,4 +129,4 @@ async function unlock(
   }
 }
 
-export { lock, unlock };
+export { encode, decode, lock, unlock };
