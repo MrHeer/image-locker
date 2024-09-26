@@ -12,7 +12,7 @@ interface UseRunAsyncOptions {
   onFinally?: () => void;
 }
 
-type AsyncFn = () => Promise<void>
+type AsyncFn = () => Promise<void>;
 
 type UseRunAsyncReturn = [boolean, (asyncFn: AsyncFn) => void];
 
