@@ -12,13 +12,15 @@ interface UseRunAsyncOptions {
   onFinally?: () => void;
 }
 
-type UserRunAsyncReturn = [boolean, (asyncFn: () => Promise<void>) => void];
+type AsyncFn = () => Promise<void>
 
-function useRunAsync(options?: UseRunAsyncOptions): UserRunAsyncReturn {
+type UseRunAsyncReturn = [boolean, (asyncFn: AsyncFn) => void];
+
+function useRunAsync(options?: UseRunAsyncOptions): UseRunAsyncReturn {
   const [loading, setLoading] = useState(false);
 
   const runAsync = useCallback(
-    (asyncFn: () => Promise<void>) => {
+    (asyncFn: AsyncFn) => {
       const fn = async (): Promise<void> => {
         try {
           setLoading(true);
